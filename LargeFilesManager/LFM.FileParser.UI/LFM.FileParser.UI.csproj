@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
+    <PackageReference Include="Lepo.i18n" Version="2.0.0" />
+    <PackageReference Include="Lepo.i18n.DependencyInjection" Version="2.0.0" />
+    <PackageReference Include="Lepo.i18n.Wpf" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\LFM.Core\LFM.Core.csproj" />
     <ProjectReference Include="..\LFM.FileParser.BL\LFM.FileParser.BL.csproj" />
   </ItemGroup>

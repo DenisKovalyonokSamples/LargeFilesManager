@@ -7,8 +7,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LFM.FileGenerator.UI"
         mc:Ignorable="d"
-           Title="Files Generator" Height="340" Width="800"
-         Style="{StaticResource CustomWindowStyle}">
+        Title="Files Generator" Height="340" Width="800"
+        Style="{StaticResource CustomWindowStyle}">
     <Window.Resources>
         <DropShadowBitmapEffect x:Key="NormalShadow" ShadowDepth="2" Softness="0.2" Opacity="0.64"/>
     </Window.Resources>
