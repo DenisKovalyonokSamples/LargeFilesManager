@@ -1,18 +1,31 @@
-﻿using System.Windows;
+﻿//using Microsoft.Extensions.Logging;
+//using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Logging;
+using Serilog;
+using System.Windows;
 
 namespace LFM.Core.Themes
 {
     public partial class DarkTheme
     {
+        //private readonly ILogger<DarkTheme> _logger;
+
+        //public DarkTheme(ILogger<DarkTheme> logger)
+        //{
+        //    _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        //}
+
         private void CloseWindow_Event(object sender, RoutedEventArgs e)
         {
             if (e.Source != null)
                 try
                 {
                     this.CloseWind(Window.GetWindow((FrameworkElement)e.Source));
+                throw new System.Exception();
                 }
                 catch
                 {
+                    Log.Information("Test");
                 }
         }
 

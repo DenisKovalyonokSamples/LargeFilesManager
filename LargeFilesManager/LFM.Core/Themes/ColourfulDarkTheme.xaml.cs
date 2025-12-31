@@ -1,9 +1,17 @@
-﻿using System.Windows;
+﻿//using Microsoft.Extensions.Logging;
+using System.Windows;
 
 namespace LFM.Core.Themes
 {
     public partial class ColourfulDarkTheme
     {
+        //private readonly ILogger<ColourfulDarkTheme> _logger;
+
+        //public ColourfulDarkTheme(ILogger<ColourfulDarkTheme> logger)
+        //{
+        //    _logger = logger;
+        //}
+
         private void CloseWindow_Event(object sender, RoutedEventArgs e)
         {
             if (e.Source != null)
@@ -11,8 +19,9 @@ namespace LFM.Core.Themes
                 {
                     this.CloseWind(Window.GetWindow((FrameworkElement)e.Source));
                 }
-                catch
+                catch (Exception ex)
                 {
+                    //_logger.LogError(ex, "Error on closing window event.");
                 }
         }
 
@@ -23,8 +32,9 @@ namespace LFM.Core.Themes
                 {
                     this.MaximizeRestore(Window.GetWindow((FrameworkElement)e.Source));
                 }
-                catch
+                catch (Exception ex)
                 {
+                    //_logger.LogError(ex, "Error on auto minimaze window event.");
                 }
         }
 
@@ -35,8 +45,9 @@ namespace LFM.Core.Themes
                 {
                     this.MinimizeWind(Window.GetWindow((FrameworkElement)e.Source));
                 }
-                catch
+                catch (Exception ex)
                 {
+                    //_logger.LogError(ex, "Error on minimaze window event.");
                 }
         }
 
