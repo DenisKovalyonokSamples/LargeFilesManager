@@ -19,6 +19,12 @@ namespace LFM.FileGenerator.UI
         public MainWindow()
         {
             InitializeComponent();
+
+            this.StateChanged += (s, e) =>
+            {
+                if (this.WindowState == WindowState.Maximized)
+                    this.WindowState = WindowState.Normal;
+            };
         }
     }
 }

@@ -6,6 +6,8 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LFM.FileGenerator.UI"
+        ResizeMode="NoResize"
+        WindowState="Normal"
         mc:Ignorable="d"
         Title="Files Generator" Height="340" Width="800"
         Style="{StaticResource CustomWindowStyle}">
