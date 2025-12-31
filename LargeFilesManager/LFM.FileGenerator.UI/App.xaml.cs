@@ -11,6 +11,7 @@ using Serilog;
 using System.Globalization;
 using System.Text;
 using System.Windows;
+using LFM.FileGenerator.BL.Services;
 
 namespace LFM.FileGenerator.UI
 {
@@ -86,7 +87,6 @@ namespace LFM.FileGenerator.UI
 
             // Register application services
             builder.Services.AddScoped<ITextFileGeneratorService, TextFileGeneratorService>();
-            builder.Services.AddScoped<ITextFileSorterService, TextFileSorterService>();
 
             // Register MainWindow
             builder.Services.AddSingleton<MainWindow>();

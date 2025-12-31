@@ -10,6 +10,7 @@ using Serilog;
 using System.Globalization;
 using System.Text;
 using System.Windows;
+using LFM.FileParser.BL.Services;
 
 namespace LFM.FileParser.UI
 {
@@ -84,7 +85,6 @@ namespace LFM.FileParser.UI
             //});
 
             // Register application services
-            builder.Services.AddScoped<ITextFileGeneratorService, TextFileGeneratorService>();
             builder.Services.AddScoped<ITextFileSorterService, TextFileSorterService>();
 
             // Register MainWindow

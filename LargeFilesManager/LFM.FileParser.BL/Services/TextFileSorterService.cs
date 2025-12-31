@@ -1,18 +1,19 @@
-﻿using LFM.Core.Comparers;
+﻿using LFM.Core;
+using LFM.Core.Comparers;
 using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Helpers;
 using LFM.Core.Interfaces;
 using LFM.Core.Models;
+using LFM.Core.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LFM.Core.Services
+namespace LFM.FileParser.BL.Services
 {
     public class TextFileSorterService : BaseService, ITextFileSorterService
     {
