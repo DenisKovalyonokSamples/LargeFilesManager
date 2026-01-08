@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace LFM.FileParser.UI
+namespace LFM.FileSorter.UI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

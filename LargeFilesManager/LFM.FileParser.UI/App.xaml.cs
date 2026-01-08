@@ -1,13 +1,13 @@
 ﻿using LFM.Core;
 using LFM.Core.Interfaces;
-using LFM.FileParser.BL.Services;
+using LFM.FileSorter.BL.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System.Windows;
 using LFM.Core.Helpers;
 
-namespace LFM.FileParser.UI
+namespace LFM.FileSorter.UI
 {
     /// <summary>
     /// Interaction logic for App.xaml

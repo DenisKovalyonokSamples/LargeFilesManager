@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LFM.FileParser.BL.Services
+namespace LFM.FileSorter.BL.Services
 {
     public class TextFileSorterService : BaseService, ITextFileSorterService
     {
