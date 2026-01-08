@@ -15,30 +15,47 @@ namespace LFM.FileParser.UI
     public partial class App : Application
     {
         //The IHost pattern is used to provide dependency injection, configuration, and logging—bringing modern .NET hosting features to desktop apps.
-        public static IHost? _appHost { get; private set; }
+        private static IHost? _appHost { get; set; }
 
-        protected override async void OnStartup(System.Windows.StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             _appHost = CreateAppHost();
-            AppStartupHelper.RegisterGlobalExceptionHandlers(this);
 
             if (_appHost != null)
             {
+                AppStartupHelper.ConfigureLogging();
+                Log.Information("File Sorter application startup initiated. AppHost created. Logger configured.");
+                // Ensure DI is available
+                ApplicationHost.Services = _appHost.Services;
+                // Register handlers after DI is ready
+                AppStartupHelper.RegisterGlobalExceptionHandlers(this); 
+
                 await _appHost.StartAsync();
+                Log.Information("AppHost started.");
             }
-            AppStartupHelper.ConfigureLogging();
+            //Ensure that the base class (Application) performs its standard initialization logic.
             base.OnStartup(e);
         }
 
-        protected override async void OnExit(System.Windows.ExitEventArgs e)
+        //For WPF OnExit(ExitEventArgs): overriding with async void is not recommended, as the framework does not await the method — so, cleanup code may not finish before the process terminates.
+        protected override void OnExit(ExitEventArgs e)
         {
+            Log.Information("File Sorter application exit initiated.");
+
             if (_appHost != null)
             {
-                await _appHost.StopAsync();
+                //Synchronously waits for async cleanup. Ensures that all cleanup is completed before the application exits.
+                _appHost.StopAsync().GetAwaiter().GetResult();
                 _appHost.Dispose();
             }
+            else
+            {
+                Log.Warning("AppHost was null during application exit.");
+            }
 
+            Log.Information("File Sorter application shutdown completed.");
             Log.CloseAndFlush();
+            //Ensures that standard shutdown logic was executed.
             base.OnExit(e);
         }
 
@@ -48,12 +65,10 @@ namespace LFM.FileParser.UI
 
             // Register application services
             builder.Services.AddScoped<ITextFileSorterService, TextFileSorterService>();
-
             // Register MainWindow
             builder.Services.AddSingleton<MainWindow>();
             // Build the host and resolve services
             var appHost = builder.Build();
-
             // Make application services available externally
             ApplicationHost.Services = appHost.Services;
 

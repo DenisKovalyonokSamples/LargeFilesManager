@@ -15,6 +15,8 @@ namespace LFM.Core.Helpers
 {
     public static class AppStartupHelper
     {
+        //private static IHost? _appHost;
+
         public static void ConfigureLogging()
         {
             Log.Logger = new LoggerConfiguration()
