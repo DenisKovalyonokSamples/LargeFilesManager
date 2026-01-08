@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LFM.Core.Comparers
+﻿namespace LFM.Core.Comparers
 {
     public class TextLineComparer : IComparer<string>
     {

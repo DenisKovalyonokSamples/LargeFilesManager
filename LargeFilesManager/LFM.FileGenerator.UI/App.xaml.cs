@@ -13,18 +13,6 @@ namespace LFM.FileGenerator.UI
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            RegisterAppServices();           
-            base.OnStartup(e);//Ensures that standard startup logic was executed.
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            AppStartupHelper.FinishAppServices();            
-            base.OnExit(e); //Ensures that standard shutdown logic was executed.
-        }
-
-        private void RegisterAppServices()
-        {
             var builder = AppStartupHelper.CreateAppBuilder();
 
             // Register application services
@@ -32,6 +20,14 @@ namespace LFM.FileGenerator.UI
             builder.Services.AddSingleton<MainWindow>();
 
             AppStartupHelper.CreateAppHost(builder, this);
+
+            base.OnStartup(e);//Ensures that standard startup logic was executed.
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            AppStartupHelper.FinishAppServices();            
+            base.OnExit(e); //Ensures that standard shutdown logic was executed.
         }
     }
 }

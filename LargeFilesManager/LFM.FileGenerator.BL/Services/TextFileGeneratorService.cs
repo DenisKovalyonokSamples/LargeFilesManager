@@ -5,11 +5,7 @@ using LFM.Core.Helpers;
 using LFM.Core.Interfaces;
 using LFM.Core.Services;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LFM.FileGenerator.BL.Services
 {
@@ -22,7 +18,6 @@ namespace LFM.FileGenerator.BL.Services
             MergeFilePartWriterLock = new object();
         }
 
-        /// <inheritdoc/>
         public void WriteTextFile(string filePath, string fileName, long fileSize, FileSizeType fileSizeType, int maxLineLength)
         {
             int bufferSize = AppSettings.BufferFileWriteSize * 1024; // number KB buffer size

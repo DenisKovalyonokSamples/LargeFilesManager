@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace LFM.Core.Models
+﻿namespace LFM.Core.Models
 {
     public class PartQueue
     {
