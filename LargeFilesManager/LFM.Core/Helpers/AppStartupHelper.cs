@@ -15,19 +15,10 @@ namespace LFM.Core.Helpers
 {
     public static class AppStartupHelper
     {
-        //private static IHost? _appHost;
+        //The IHost pattern is used to provide dependency injection, configuration, and logging—bringing modern .NET hosting features to desktop apps.
+        private static IHost? _appHost;
 
-        public static void ConfigureLogging()
-        {
-            Log.Logger = new LoggerConfiguration()
-           .MinimumLevel.Debug()
-           .WriteTo.Console()
-           .WriteTo.File(ServiceManager.AppSettings.Value.LogFilePath, rollingInterval: RollingInterval.Day, shared: true,
-               outputTemplate: ServiceManager.AppSettings.Value.OutputLogToFileTemplate)
-           .Enrich.WithThreadId()
-           .Enrich.WithProcessId()
-           .CreateLogger();
-        }
+        #region Public Methods
 
         public static HostApplicationBuilder CreateAppBuilder()
         {
@@ -53,6 +44,59 @@ namespace LFM.Core.Helpers
             return builder;
         }
 
+        public static void CreateAppHost(HostApplicationBuilder builder, Application app)
+        {
+            // Build the host and resolve services
+            _appHost = builder.Build();
+            // Make application services available externally
+            ApplicationHost.Services = _appHost.Services;
+
+            if (_appHost != null)
+            {
+                AppStartupHelper.ConfigureLogging();
+                Log.Information("Application startup initiated. AppHost created. Logger configured.");
+                // Ensure DI is available
+                ApplicationHost.Services = _appHost.Services;
+                // Register handlers after DI is ready
+                AppStartupHelper.RegisterGlobalExceptionHandlers(app);
+                //Synchronously waits for async startup. Ensures that all startup process is completed.
+                _appHost.StartAsync().GetAwaiter().GetResult();
+                Log.Information("Application AppHost started.");
+            }
+        }
+
+        public static void ConfigureLogging()
+        {
+            Log.Logger = new LoggerConfiguration()
+           .MinimumLevel.Debug()
+           .WriteTo.Console()
+           .WriteTo.File(ServiceManager.AppSettings.Value.LogFilePath, rollingInterval: RollingInterval.Day, shared: true,
+               outputTemplate: ServiceManager.AppSettings.Value.OutputLogToFileTemplate)
+           .Enrich.WithThreadId()
+           .Enrich.WithProcessId()
+           .CreateLogger();
+        }
+
+        public static void FinishAppServices()
+        {
+            Log.Information("Application exit initiated.");
+
+            if (_appHost != null)
+            {
+                //For WPF OnStartup/OnExit: overriding with async void is not recommended, as the framework does not await the method — some code may not finish before the process terminates (cleanup code etc).
+                //Synchronously waits for async cleanup. Ensures that all cleanup is completed before the application exits.
+                _appHost.StopAsync().GetAwaiter().GetResult();
+                _appHost.Dispose();
+            }
+            else
+            {
+                Log.Warning("AppHost was null during application exit.");
+            }
+
+            Log.Information("Application shutdown completed.");
+            Log.CloseAndFlush();
+        }
+
         public static void RegisterGlobalExceptionHandlers(Application app)
         {
             // UI thread exceptions (WPF Dispatcher)
@@ -66,7 +110,7 @@ namespace LFM.Core.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Log.Error(ex, "RegisterGlobalExceptionHandlers function error.");
+                    Log.Error(ex, "RegisterGlobalExceptionHandlers function, DispatcherUnhandledExceptions error.");
                 }
                 finally
                 {
@@ -85,7 +129,7 @@ namespace LFM.Core.Helpers
                     Log.Error(ex, "AppDomain.CurrentDomain.UnhandledException (IsTerminating={IsTerminating})", args.IsTerminating);
 
                     string nonUIThreadErrorMessage = ServiceManager.StringLocalizer[TranslationConstant.NonUIThreadError];
-                    // marshals to UI thread so we show the dialog owned by MainWindow
+                    // Marshals to UI thread so we show the dialog owned by MainWindow
                     app.Dispatcher.Invoke(() => ShowExceptionDialog(app, ex, nonUIThreadErrorMessage));
 
                     string errorMessage = ServiceManager.StringLocalizer[TranslationConstant.UnhandledException];
@@ -119,23 +163,27 @@ namespace LFM.Core.Helpers
             };
         }
 
-        private static void ShowExceptionDialog(Application app, Exception ex, string caption = "Application error")
+        #endregion
+
+        #region Private Methods
+
+        private static void ShowExceptionDialog(Application app, Exception exeption, string caption = "Application error")
         {
             try
             {
                 // Compose a concise message, include full details in "Details" tooltip for debugging
                 var messageBuilder = new StringBuilder();
                 messageBuilder.AppendLine(ServiceManager.StringLocalizer[TranslationConstant.UnexpectedErrorOccurred]);
-                if (!string.IsNullOrWhiteSpace(ex.Message))
+                if (!string.IsNullOrWhiteSpace(exeption.Message))
                 {
                     messageBuilder.AppendLine();
                     messageBuilder.AppendLine(ServiceManager.StringLocalizer[TranslationConstant.Message] + ":");
-                    messageBuilder.AppendLine(ex.Message);
+                    messageBuilder.AppendLine(exeption.Message);
                 }
 
                 messageBuilder.AppendLine();
                 messageBuilder.AppendLine(ServiceManager.StringLocalizer[TranslationConstant.Details] + ":");
-                messageBuilder.AppendLine(ex.ToString());
+                messageBuilder.AppendLine(exeption.ToString());
 
                 // Use MainWindow as owner when available to ensure modal behaviour
                 var owner = app?.MainWindow;
@@ -143,18 +191,24 @@ namespace LFM.Core.Helpers
 
                 Log.Error(messageBuilder.ToString());
             }
-            catch
+            catch (Exception exceptionDialogEx)
             {
+                Log.Error(exceptionDialogEx, "ShowExceptionDialog error.");
                 // If showing the dialog fails, attempt a minimal MessageBox as a last resort
                 try
                 {
                     string errorMessage = ServiceManager.StringLocalizer[TranslationConstant.FatalErrorOccurred];
                     string fatalErrorTitle = ServiceManager.StringLocalizer[TranslationConstant.FatalErrorTitle];
 
-                    System.Windows.MessageBox.Show(errorMessage, fatalErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(errorMessage, fatalErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-                catch { /* swallow */ }
+                catch (Exception minimalMessageBoxEx)
+                {
+                    Log.Error(minimalMessageBoxEx, "Show minimal MessageBox error.");
+                }
             }
         }
+
+        #endregion
     }
 }

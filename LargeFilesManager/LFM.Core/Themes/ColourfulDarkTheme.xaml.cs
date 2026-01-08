@@ -1,17 +1,10 @@
-﻿//using Microsoft.Extensions.Logging;
+﻿using Serilog;
 using System.Windows;
 
 namespace LFM.Core.Themes
 {
     public partial class ColourfulDarkTheme
     {
-        //private readonly ILogger<ColourfulDarkTheme> _logger;
-
-        //public ColourfulDarkTheme(ILogger<ColourfulDarkTheme> logger)
-        //{
-        //    _logger = logger;
-        //}
-
         private void CloseWindow_Event(object sender, RoutedEventArgs e)
         {
             if (e.Source != null)
@@ -21,7 +14,7 @@ namespace LFM.Core.Themes
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError(ex, "Error on closing window event.");
+                    Log.Error(ex, "ColourfulDarkTheme CloseWindow_Event error.");
                 }
         }
 
@@ -34,7 +27,7 @@ namespace LFM.Core.Themes
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError(ex, "Error on auto minimaze window event.");
+                    Log.Error(ex, "ColourfulDarkTheme AutoMinimize_Event error.");
                 }
         }
 
@@ -47,7 +40,7 @@ namespace LFM.Core.Themes
                 }
                 catch (Exception ex)
                 {
-                    //_logger.LogError(ex, "Error on minimaze window event.");
+                    Log.Error(ex, "ColourfulDarkTheme Minimize_Event error");
                 }
         }
 

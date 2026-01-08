@@ -9,7 +9,7 @@
         ResizeMode="NoResize"
         WindowState="Normal"
         mc:Ignorable="d"
-        Title="Files Generator" Height="340" Width="800"
+        Title="File Generator" Height="340" Width="800"
         Style="{StaticResource CustomWindowStyle}">
     <Window.Resources>
         <DropShadowBitmapEffect x:Key="NormalShadow" ShadowDepth="2" Softness="0.2" Opacity="0.64"/>
