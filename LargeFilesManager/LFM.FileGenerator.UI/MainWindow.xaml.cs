@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using LFM.FileGenerator.UI.ViewModels;
+using System.Windows;
 
 namespace LFM.FileGenerator.UI
 {
@@ -16,6 +17,8 @@ namespace LFM.FileGenerator.UI
                 if (this.WindowState == WindowState.Maximized)
                     this.WindowState = WindowState.Normal;
             };
+
+            DataContext = new FileGeneratorViewModel();
         }
     }
 }

@@ -61,7 +61,7 @@
             </GroupBox>
             <StackPanel VerticalAlignment="Top">
                 <Button Grid.Row="2" Grid.Column="1" Name="GenerateFileButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Command="{Binding BrowseFolderCommand}" Margin="5,35,10,2" Background="Green">
+                    Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{i18n:StringLocalizer 'Generate Text File'}" VerticalAlignment="Center"/>
                     </StackPanel>

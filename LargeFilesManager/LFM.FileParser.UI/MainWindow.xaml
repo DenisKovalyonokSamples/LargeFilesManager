@@ -40,9 +40,9 @@
                     Text="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <Button Grid.Row="0" Grid.Column="2" Name="BrowseFolderButton" Height="22" 
-                    Command="{Binding BrowseFolderCommand}" Margin="5,2,-6,2">
+                    Command="{Binding SelectInputFileTextCommand}" Margin="5,2,-6,2">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{i18n:StringLocalizer 'Select File'}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{i18n:StringLocalizer 'SelectFile'}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
 

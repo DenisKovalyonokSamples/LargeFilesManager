@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using LFM.FileSorter.UI.ViewModels;
+using System.Windows;
 
 namespace LFM.FileSorter.UI
 {
@@ -16,6 +17,8 @@ namespace LFM.FileSorter.UI
                 if (this.WindowState == WindowState.Maximized)
                     this.WindowState = WindowState.Normal;
             };
+
+            DataContext = new FileSorterViewModel();
         }
     }
 }

@@ -22,6 +22,9 @@ namespace LFM.Core.Helpers
 
         public static HostApplicationBuilder CreateAppBuilder()
         {
+            // Set default culture to en-US
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+
             var builder = Host.CreateApplicationBuilder();
 
             // Add appsettings.json
