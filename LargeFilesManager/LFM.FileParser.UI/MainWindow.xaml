@@ -5,6 +5,7 @@
         xmlns:i18n="clr-namespace:Lepo.i18n.Wpf;assembly=Lepo.i18n.Wpf"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:controls="clr-namespace:LFM.Core.Controls;assembly=LFM.Core"
         xmlns:local="clr-namespace:LFM.FileSorter.UI"
         ResizeMode="NoResize"
         WindowState="Normal"
@@ -36,10 +37,10 @@
 
                     <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Input File'}" HorizontalAlignment="Right" />
 
-                    <TextBox Grid.Row="0" Grid.Column="1" Name="SelectedFolderText" Width="550" Height="22"
-                    Text="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Width="550" Height="22"
+                    Text="{Binding InputFileNamePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <Button Grid.Row="0" Grid.Column="2" Name="BrowseFolderButton" Height="22" 
+                    <Button Grid.Row="0" Grid.Column="2" Name="BrowseInputFileButton" Height="22" 
                     Command="{Binding SelectInputFileTextCommand}" Margin="5,2,-6,2">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{i18n:StringLocalizer 'SelectFile'}" VerticalAlignment="Center"/>
@@ -48,43 +49,25 @@
 
                     <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'Output File'}" HorizontalAlignment="Right" />
 
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Name="TextFileNameBox" Text="{Binding FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="550" Height="22" />
-                    </StackPanel>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFileNamePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="550" Height="22" />
+
+                    <Button Grid.Row="1" Grid.Column="2" Name="BrowseOutputFileButton" Height="22" 
+                        Command="{Binding SelectOutputFileTextCommand}" Margin="5,2,-6,2">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{i18n:StringLocalizer 'SelectFile'}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </Grid>
             </GroupBox>
             <StackPanel VerticalAlignment="Top">
                 <Button Grid.Row="2" Grid.Column="1" Name="GenerateFileButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                Command="{Binding BrowseFolderCommand}" Margin="5,35,10,2" Background="Green">
+                Command="{Binding SortTextFileCommand}" Margin="5,35,10,2" Background="Green">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{i18n:StringLocalizer 'Sort Text File'}" VerticalAlignment="Center"/>
+                        <TextBlock Text="{i18n:StringLocalizer 'SortFileButtonName'}" VerticalAlignment="Center"/>
                     </StackPanel>
                 </Button>
                 <GroupBox x:Name="groupBoxone" Header="Sorting progress" Margin="10,10,10, 20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Duration'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="0" Grid.Column="1" Content="{i18n:StringLocalizer '0:00:06:18:927'}" HorizontalAlignment="Left" />
-
-                        <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'File Parts'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="1" Grid.Column="1" Content="{i18n:StringLocalizer '1 of 32 file parts has been sorted.'}" HorizontalAlignment="Left" />
-
-                        <Label Grid.Row="2" Grid.Column="0" Content="{i18n:StringLocalizer 'Size'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="2" Grid.Column="1" Content="{i18n:StringLocalizer '99,43 GB / 100 GB'}" HorizontalAlignment="Left" />
-
-                        <Label Grid.Row="3" Grid.Column="0" Content="{i18n:StringLocalizer 'Progress'}" HorizontalAlignment="Right" />
-                        <ProgressBar Grid.Row="3" Grid.Column="1" Background="Green" VerticalAlignment="Center" Height="8" Width="550" Visibility="{Binding ProgressBarVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    </Grid>
+                    <controls:ProgressPanel />
                 </GroupBox>
             </StackPanel>
         </StackPanel>

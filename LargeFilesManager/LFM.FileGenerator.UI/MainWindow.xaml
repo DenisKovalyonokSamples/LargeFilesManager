@@ -6,6 +6,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LFM.FileGenerator.UI"
+        xmlns:controls="clr-namespace:LFM.Core.Controls;assembly=LFM.Core"
         ResizeMode="NoResize"
         WindowState="Normal"
         mc:Ignorable="d"
@@ -67,30 +68,7 @@
                     </StackPanel>
                 </Button>
                 <GroupBox x:Name="groupBoxone" Header="Generation progress" Margin="10,10,10, 20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="100"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="100"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Duration'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="0" Grid.Column="1" Content="{i18n:StringLocalizer '0:00:06:18:927'}" HorizontalAlignment="Left" />
-                        
-                        <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'File Parts'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="1" Grid.Column="1" Content="{i18n:StringLocalizer '1 of 32 file parts has been written.'}" HorizontalAlignment="Left" />
-
-                        <Label Grid.Row="2" Grid.Column="0" Content="{i18n:StringLocalizer 'Size'}" HorizontalAlignment="Right" />
-                        <Label Grid.Row="2" Grid.Column="1" Content="{i18n:StringLocalizer '99,43 GB / 100 GB'}" HorizontalAlignment="Left" />
-                        
-                        <Label Grid.Row="3" Grid.Column="0" Content="{i18n:StringLocalizer 'Progress'}" HorizontalAlignment="Right" />
-                        <ProgressBar Grid.Row="3" Grid.Column="1" Background="Green" VerticalAlignment="Center" Height="8" Width="550" Visibility="{Binding ProgressBarVisibility, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    </Grid>
+                    <controls:ProgressPanel />
                 </GroupBox>
             </StackPanel>
         </StackPanel>

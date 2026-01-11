@@ -47,7 +47,7 @@ namespace LFM.Core.Helpers
             return builder;
         }
 
-        public static void CreateAppHost(HostApplicationBuilder builder, Application app)
+        public static void CreateAppHost(HostApplicationBuilder builder, System.Windows.Application app)
         {
             // Build the host and resolve services
             _appHost = builder.Build();
@@ -100,7 +100,7 @@ namespace LFM.Core.Helpers
             Log.CloseAndFlush();
         }
 
-        public static void RegisterGlobalExceptionHandlers(Application app)
+        public static void RegisterGlobalExceptionHandlers(System.Windows.Application app)
         {
             // UI thread exceptions (WPF Dispatcher)
             app.DispatcherUnhandledException += (sender, args) =>
@@ -170,7 +170,7 @@ namespace LFM.Core.Helpers
 
         #region Private Methods
 
-        private static void ShowExceptionDialog(Application app, Exception exeption, string caption = "Application error")
+        private static void ShowExceptionDialog(System.Windows.Application app, Exception exeption, string caption = "Application error")
         {
             try
             {
@@ -190,7 +190,7 @@ namespace LFM.Core.Helpers
 
                 // Use MainWindow as owner when available to ensure modal behaviour
                 var owner = app?.MainWindow;
-                MessageBox.Show(owner, messageBuilder.ToString(), caption, MessageBoxButton.OK, MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(owner, messageBuilder.ToString(), caption, MessageBoxButton.OK, MessageBoxImage.Error);
 
                 Log.Error(messageBuilder.ToString());
             }
@@ -203,7 +203,7 @@ namespace LFM.Core.Helpers
                     string errorMessage = ServiceManager.StringLocalizer[TranslationConstant.FatalErrorOccurred];
                     string fatalErrorTitle = ServiceManager.StringLocalizer[TranslationConstant.FatalErrorTitle];
 
-                    MessageBox.Show(errorMessage, fatalErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
+                    System.Windows.MessageBox.Show(errorMessage, fatalErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error);
                 }
                 catch (Exception minimalMessageBoxEx)
                 {
