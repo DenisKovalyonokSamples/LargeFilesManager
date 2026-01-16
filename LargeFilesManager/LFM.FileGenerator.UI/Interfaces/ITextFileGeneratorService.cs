@@ -1,7 +1,7 @@
 ﻿using LFM.Core.Enums;
 using LFM.Core.Interfaces;
 
-namespace LFM.FileGenerator.UI.Interfaces
+namespace LFM.FileGenerator.Interfaces
 {
     public interface ITextFileGeneratorService : IBaseService
     {

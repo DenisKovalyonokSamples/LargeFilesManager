@@ -1,14 +1,14 @@
 using LFM.Core;
 using LFM.Core.Enums;
-using LFM.FileGenerator.UI.ViewModels;
+using LFM.FileGenerator.ViewModels;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using LFM.Core.Services;
-using LFM.FileGenerator.UI.Interfaces;
+using LFM.FileGenerator.Interfaces;
 
-namespace LFM.FileGenerator.UI.Tests.UnitTests
+namespace LFM.FileGenerator.Tests.UnitTests
 {
     public class FileGeneratorTests
     {

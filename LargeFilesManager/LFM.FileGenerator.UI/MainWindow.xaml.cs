@@ -1,7 +1,7 @@
-﻿using LFM.FileGenerator.UI.ViewModels;
+﻿using LFM.FileGenerator.ViewModels;
 using System.Windows;
 
-namespace LFM.FileGenerator.UI
+namespace LFM.FileGenerator
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

@@ -3,12 +3,12 @@ using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Helpers;
 using LFM.Core.Services;
-using LFM.FileGenerator.UI.Interfaces;
+using LFM.FileGenerator.Interfaces;
 using Serilog;
 using System.IO;
 using System.Text;
 
-namespace LFM.FileGenerator.UI.Services
+namespace LFM.FileGenerator.Services
 {
     public class FileGeneratorService : BaseService, ITextFileGeneratorService
     {

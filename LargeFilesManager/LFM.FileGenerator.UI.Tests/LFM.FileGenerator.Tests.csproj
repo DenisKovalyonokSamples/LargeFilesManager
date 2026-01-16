@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LFM.FileGenerator.UI\LFM.FileGenerator.UI.csproj" />
+    <ProjectReference Include="..\LFM.FileGenerator.UI\LFM.FileGenerator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using LFM.Core.Helpers;
-using LFM.FileGenerator.UI.Services;
-using LFM.FileGenerator.UI.Interfaces;
+using LFM.FileGenerator.Services;
+using LFM.FileGenerator.Interfaces;
 
-namespace LFM.FileGenerator.UI
+namespace LFM.FileGenerator
 {
     public partial class App : System.Windows.Application
     {

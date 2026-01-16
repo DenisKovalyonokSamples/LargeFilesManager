@@ -3,13 +3,13 @@ using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Models;
 using LFM.Core.Services;
-using LFM.FileGenerator.UI.Services;
+using LFM.FileGenerator.Services;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Input;
 
-namespace LFM.FileGenerator.UI.ViewModels
+namespace LFM.FileGenerator.ViewModels
 {
     public class FileGeneratorViewModel : BaseViewModel
     {
