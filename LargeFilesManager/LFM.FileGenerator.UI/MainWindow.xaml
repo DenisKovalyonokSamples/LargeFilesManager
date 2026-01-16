@@ -38,10 +38,10 @@
                     <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Folder Path'}" HorizontalAlignment="Right" />
 
                     <TextBox Grid.Row="0" Grid.Column="1" Name="SelectedFolderText" Width="550" Height="22"
-                        Text="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        Text="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
 
                     <Button Grid.Row="0" Grid.Column="2" Name="BrowseFolderButton" Height="22" 
-                        Command="{Binding BrowseFolderCommand}" Margin="5,2,-6,2">
+                        Command="{Binding BrowseFolderCommand}" Margin="5,2,-6,2" IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{i18n:StringLocalizer 'Browse'}" VerticalAlignment="Center"/>
                         </StackPanel>
@@ -50,11 +50,13 @@
                     <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'File Name'}" HorizontalAlignment="Right" />
 
                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Name="TextFileNameBox" Text="{Binding FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="380" Height="22" />
+                        <TextBox Name="TextFileNameBox" Text="{Binding FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="380" Height="22" 
+                                 IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Label Grid.Row="2" Grid.Column="0"  Content="{i18n:StringLocalizer 'File Size'}" HorizontalAlignment="Right"/>
                         <xctk:IntegerUpDown Value="{Binding FileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            Width="60" Minimum="0" Maximum="500" Height="22" Background="#FF2D2D2D" BorderBrush="#FF2F2F2F" Foreground="White"/>
-                        <ComboBox ItemsSource="{Binding FileSizeTypes}"
+                            Width="60" Minimum="0" Maximum="500" Height="22" Background="#FF2D2D2D" BorderBrush="#FF2F2F2F" Foreground="White"
+                            IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <ComboBox ItemsSource="{Binding FileSizeTypes}" IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           SelectedItem="{Binding SelectedFileSizeType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                           Width="50" Height="22" Margin="10 0 0 0" />
                     </StackPanel>
@@ -62,7 +64,8 @@
             </GroupBox>
             <StackPanel VerticalAlignment="Top">
                 <Button Grid.Row="2" Grid.Column="1" Name="GenerateFileButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green">
+                    Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green"
+                    IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="{i18n:StringLocalizer 'Generate Text File'}" VerticalAlignment="Center"/>
                     </StackPanel>

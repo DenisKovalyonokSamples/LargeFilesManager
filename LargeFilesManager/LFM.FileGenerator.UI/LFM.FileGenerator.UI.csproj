@@ -23,7 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LFM.Core\LFM.Core.csproj" />
-    <ProjectReference Include="..\LFM.FileGenerator.BL\LFM.FileGenerator.BL.csproj" />
   </ItemGroup>
 
 </Project>

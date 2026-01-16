@@ -59,509 +59,417 @@ namespace LFM.Core.Localization {
                 resourceCulture = value;
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to All file parts are written.
         /// </summary>
-        internal static string AllFilePartWritten
-        {
-            get
-            {
+        internal static string AllFilePartWritten {
+            get {
                 return ResourceManager.GetString("AllFilePartWritten", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Browse.
         /// </summary>
-        internal static string BrowseFolder
-        {
-            get
-            {
+        internal static string BrowseFolder {
+            get {
                 return ResourceManager.GetString("BrowseFolder", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Deleted existing file: {0}.
         /// </summary>
-        internal static string DeleteExistingFile
-        {
-            get
-            {
+        internal static string DeleteExistingFile {
+            get {
                 return ResourceManager.GetString("DeleteExistingFile", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Details.
         /// </summary>
-        internal static string Details
-        {
-            get
-            {
+        internal static string Details {
+            get {
                 return ResourceManager.GetString("Details", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text files (*.txt)|*.txt|All files (*.*)|*.*.
         /// </summary>
-        internal static string DialogFilter
-        {
-            get
-            {
+        internal static string DialogFilter {
+            get {
                 return ResourceManager.GetString("DialogFilter", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Duration :.
+        ///   Looks up a localized string similar to Duration.
         /// </summary>
-        internal static string Duration
-        {
-            get
-            {
+        internal static string Duration {
+            get {
                 return ResourceManager.GetString("Duration", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to A fatal error occurred and the error dialog could not be displayed..
         /// </summary>
-        internal static string FatalErrorOccurred
-        {
-            get
-            {
+        internal static string FatalErrorOccurred {
+            get {
                 return ResourceManager.GetString("FatalErrorOccurred", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Fatal error.
         /// </summary>
-        internal static string FatalErrorTitle
-        {
-            get
-            {
+        internal static string FatalErrorTitle {
+            get {
                 return ResourceManager.GetString("FatalErrorTitle", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to File Name :.
         /// </summary>
-        internal static string FileNameLabel
-        {
-            get
-            {
+        internal static string FileNameLabel {
+            get {
                 return ResourceManager.GetString("FileNameLabel", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to File Size :.
         /// </summary>
-        internal static string FileSizeLabel
-        {
-            get
-            {
+        internal static string FileSizeLabel {
+            get {
                 return ResourceManager.GetString("FileSizeLabel", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text Line Max Length :.
         /// </summary>
-        internal static string FileTextLineLengthMaxLabel
-        {
-            get
-            {
+        internal static string FileTextLineLengthMaxLabel {
+            get {
                 return ResourceManager.GetString("FileTextLineLengthMaxLabel", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 2/2 File writing and merging completed..
         /// </summary>
-        internal static string FileWritingMergingCompleted
-        {
-            get
-            {
+        internal static string FileWritingMergingCompleted {
+            get {
                 return ResourceManager.GetString("FileWritingMergingCompleted", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Finished writing {0}.
         /// </summary>
-        internal static string FinishWriteFilePart
-        {
-            get
-            {
+        internal static string FinishWriteFilePart {
+            get {
                 return ResourceManager.GetString("FinishWriteFilePart", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Select a folder.
         /// </summary>
-        internal static string FolderBrowserDialog_Description_SelectFolder
-        {
-            get
-            {
+        internal static string FolderBrowserDialog_Description_SelectFolder {
+            get {
                 return ResourceManager.GetString("FolderBrowserDialog_Description_SelectFolder", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Generate File.
         /// </summary>
-        internal static string GenerateFileButtonName
-        {
-            get
-            {
+        internal static string GenerateFileButtonName {
+            get {
                 return ResourceManager.GetString("GenerateFileButtonName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to GenerateTextFile button has been clicked.
         /// </summary>
-        internal static string GenerateTextFile_Button_Clicked
-        {
-            get
-            {
+        internal static string GenerateTextFile_Button_Clicked {
+            get {
                 return ResourceManager.GetString("GenerateTextFile_Button_Clicked", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Input :.
         /// </summary>
-        internal static string Input
-        {
-            get
-            {
+        internal static string Input {
+            get {
                 return ResourceManager.GetString("Input", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 2/2 Merging {0} file parts into &quot;{1}&quot;.
         /// </summary>
-        internal static string MergeFilePartInto
-        {
-            get
-            {
+        internal static string MergeFilePartInto {
+            get {
                 return ResourceManager.GetString("MergeFilePartInto", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Merging completed. Final file created at: {0}.
         /// </summary>
-        internal static string MergingCompletedFinalFileCreated
-        {
-            get
-            {
+        internal static string MergingCompletedFinalFileCreated {
+            get {
                 return ResourceManager.GetString("MergingCompletedFinalFileCreated", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Merging file part {0} of {1}.
         /// </summary>
-        internal static string MergingFilePartOf
-        {
-            get
-            {
+        internal static string MergingFilePartOf {
+            get {
                 return ResourceManager.GetString("MergingFilePartOf", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 3/3 Merging {0} sorted part files into &quot;{1}&quot;....
         /// </summary>
-        internal static string MergingSortedPartFileInto
-        {
-            get
-            {
+        internal static string MergingSortedPartFileInto {
+            get {
                 return ResourceManager.GetString("MergingSortedPartFileInto", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Non-UI thread error.
         /// </summary>
-        internal static string NonUIThreadError
-        {
-            get
-            {
+        internal static string NonUIThreadError {
+            get {
                 return ResourceManager.GetString("NonUIThreadError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Output :.
         /// </summary>
-        internal static string Output
-        {
-            get
-            {
+        internal static string Output {
+            get {
                 return ResourceManager.GetString("Output", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 2/3 &quot;{0}&quot; has been sorted..
         /// </summary>
-        internal static string PartFileIsSorted
-        {
-            get
-            {
+        internal static string PartFileIsSorted {
+            get {
                 return ResourceManager.GetString("PartFileIsSorted", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 1/2 Writing to {0} file parts using parallel tasks....
         /// </summary>
-        internal static string PartFilesToWriteInParallel
-        {
-            get
-            {
+        internal static string PartFilesToWriteInParallel {
+            get {
                 return ResourceManager.GetString("PartFilesToWriteInParallel", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Path :.
         /// </summary>
-        internal static string Path
-        {
-            get
-            {
+        internal static string Path {
+            get {
                 return ResourceManager.GetString("Path", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Select File.
         /// </summary>
-        internal static string SelectFile
-        {
-            get
-            {
+        internal static string SelectFile {
+            get {
                 return ResourceManager.GetString("SelectFile", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to {0}_sorted_part{1}.txt.
         /// </summary>
-        internal static string SortedFilePartName
-        {
-            get
-            {
+        internal static string SortedFilePartName {
+            get {
                 return ResourceManager.GetString("SortedFilePartName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sorter.
         /// </summary>
-        internal static string Sorter
-        {
-            get
-            {
+        internal static string Sorter {
+            get {
                 return ResourceManager.GetString("Sorter", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sort Text File.
         /// </summary>
-        internal static string SortFileButtonName
-        {
-            get
-            {
+        internal static string SortFileButtonName {
+            get {
                 return ResourceManager.GetString("SortFileButtonName", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Sort Text File Result.
         /// </summary>
-        internal static string SortTextFileResult
-        {
-            get
-            {
+        internal static string SortTextFileResult {
+            get {
                 return ResourceManager.GetString("SortTextFileResult", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to 1/3 Split &quot;{0}&quot; in multiple sorted parts....
         /// </summary>
-        internal static string SplitInputFileInMultipleSortedParts
-        {
-            get
-            {
+        internal static string SplitInputFileInMultipleSortedParts {
+            get {
                 return ResourceManager.GetString("SplitInputFileInMultipleSortedParts", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Starting to write file part {0} of {1}, target size: {2} bytes.
         /// </summary>
-        internal static string StartWriteFilePart
-        {
-            get
-            {
+        internal static string StartWriteFilePart {
+            get {
                 return ResourceManager.GetString("StartWriteFilePart", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to d\:hh\:mm\:ss\.fff.
         /// </summary>
-        internal static string StopWatchElapsedFormat
-        {
-            get
-            {
+        internal static string StopWatchElapsedFormat {
+            get {
                 return ResourceManager.GetString("StopWatchElapsedFormat", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Task error.
         /// </summary>
-        internal static string TaskError
-        {
-            get
-            {
+        internal static string TaskError {
+            get {
                 return ResourceManager.GetString("TaskError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text File Generation.
         /// </summary>
-        internal static string TextFileGeneration
-        {
-            get
-            {
+        internal static string TextFileGeneration {
+            get {
                 return ResourceManager.GetString("TextFileGeneration", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Test File Generator.
         /// </summary>
-        internal static string TextFileGenerator
-        {
-            get
-            {
+        internal static string TextFileGenerator {
+            get {
                 return ResourceManager.GetString("TextFileGenerator", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text File Information.
         /// </summary>
-        internal static string TextFileInformation
-        {
-            get
-            {
+        internal static string TextFileInformation {
+            get {
                 return ResourceManager.GetString("TextFileInformation", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text File Sorter.
         /// </summary>
-        internal static string TextFileSorter
-        {
-            get
-            {
+        internal static string TextFileSorter {
+            get {
                 return ResourceManager.GetString("TextFileSorter", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Text file has been started to be sorted....
         /// </summary>
-        internal static string TextFileStartedToBeSorted
-        {
-            get
-            {
+        internal static string TextFileStartedToBeSorted {
+            get {
                 return ResourceManager.GetString("TextFileStartedToBeSorted", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to UI thread error.
         /// </summary>
-        internal static string UIThreadError
-        {
-            get
-            {
+        internal static string UIThreadError {
+            get {
                 return ResourceManager.GetString("UIThreadError", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to An unexpected error occurred..
         /// </summary>
-        internal static string UnexpectedErrorOccurred
-        {
-            get
-            {
+        internal static string UnexpectedErrorOccurred {
+            get {
                 return ResourceManager.GetString("UnexpectedErrorOccurred", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Unhandled exception.
         /// </summary>
-        internal static string UnhandledException
-        {
-            get
-            {
+        internal static string UnhandledException {
+            get {
                 return ResourceManager.GetString("UnhandledException", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Unknown non-UI exception.
         /// </summary>
-        internal static string UnknownNonUIException
-        {
-            get
-            {
+        internal static string UnknownNonUIException {
+            get {
                 return ResourceManager.GetString("UnknownNonUIException", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Unsupported file size type.
         /// </summary>
-        internal static string UnsupportedFileSizeType
-        {
-            get
-            {
+        internal static string UnsupportedFileSizeType {
+            get {
                 return ResourceManager.GetString("UnsupportedFileSizeType", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to Writing to {0}, target size: {1} bytes.
         /// </summary>
-        internal static string WriteToFilePart
-        {
-            get
-            {
+        internal static string WriteToFilePart {
+            get {
                 return ResourceManager.GetString("WriteToFilePart", resourceCulture);
             }
         }

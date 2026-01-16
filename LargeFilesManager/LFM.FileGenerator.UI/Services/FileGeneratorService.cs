@@ -2,18 +2,19 @@
 using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Helpers;
-using LFM.Core.Interfaces;
 using LFM.Core.Services;
+using LFM.FileGenerator.UI.Interfaces;
 using Serilog;
+using System.IO;
 using System.Text;
 
-namespace LFM.FileGenerator.BL.Services
+namespace LFM.FileGenerator.UI.Services
 {
-    public class TextFileGeneratorService : BaseService, ITextFileGeneratorService
+    public class FileGeneratorService : BaseService, ITextFileGeneratorService
     {
         private object MergeFilePartWriterLock { get; set; }
 
-        public TextFileGeneratorService() : base()
+        public FileGeneratorService() : base()
         {
             MergeFilePartWriterLock = new object();
         }

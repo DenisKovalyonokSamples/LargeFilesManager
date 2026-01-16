@@ -60,14 +60,13 @@ namespace LFM.Core.Models
 
                 FileSizeType fileSizeType = FileSizeType.B;
 
-
                 if (value >= gb)
                 {
                     fileSizeType = FileSizeType.GB;
                 }
                 else if (value >= mb)
                 {
-                    fileSizeType = FileSizeType.GB;
+                    fileSizeType = FileSizeType.MB;
                 }
                 else if (value >= kb)
                 {
@@ -149,8 +148,14 @@ namespace LFM.Core.Models
             decimal maxValueByteMeasure = maxValue / bytes;
             maxValueByteMeasure = Math.Round(maxValueByteMeasure, 2, MidpointRounding.ToEven);
 
-
-            return $"{valueByteMeasure} {fileSizeType.ToString()} / {maxValueByteMeasure} {fileSizeType.ToString()}";
+            if (valueByteMeasure == 0)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return $"{valueByteMeasure} {fileSizeType.ToString()} / {maxValueByteMeasure} {fileSizeType.ToString()}";
+            }
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

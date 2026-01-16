@@ -1,8 +1,8 @@
-﻿using LFM.Core.Interfaces;
-using LFM.FileSorter.BL.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using LFM.Core.Helpers;
+using LFM.FileSorter.UI.Services;
+using LFM.FileSorter.UI.Interfaces;
 
 namespace LFM.FileSorter.UI
 {
@@ -13,7 +13,7 @@ namespace LFM.FileSorter.UI
             var builder = AppStartupHelper.CreateAppBuilder();
 
             // Register application services
-            builder.Services.AddScoped<ITextFileSorterService, TextFileSorterService>();
+            builder.Services.AddScoped<ITextFileSorterService, FileSorterService>();
             builder.Services.AddSingleton<MainWindow>();
 
             AppStartupHelper.CreateAppHost(builder, this);

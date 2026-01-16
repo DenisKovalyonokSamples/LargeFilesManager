@@ -1,12 +1,12 @@
 using LFM.Core;
 using LFM.Core.Enums;
-using LFM.Core.Interfaces;
 using LFM.FileGenerator.UI.ViewModels;
 using Microsoft.Extensions.Options;
 using Moq;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using LFM.Core.Services;
+using LFM.FileGenerator.UI.Interfaces;
 
 namespace LFM.FileGenerator.UI.Tests.UnitTests
 {

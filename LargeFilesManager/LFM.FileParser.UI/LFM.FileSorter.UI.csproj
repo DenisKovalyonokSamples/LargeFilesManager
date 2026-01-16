@@ -27,7 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LFM.Core\LFM.Core.csproj" />
-    <ProjectReference Include="..\LFM.FileParser.BL\LFM.FileSorter.BL.csproj" />
   </ItemGroup>
 
 </Project>

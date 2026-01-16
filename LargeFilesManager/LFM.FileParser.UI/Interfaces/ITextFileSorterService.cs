@@ -1,4 +1,7 @@
-﻿namespace LFM.Core.Interfaces
+﻿using LFM.Core.Interfaces;
+using LFM.FileSorter.UI.ViewModels;
+
+namespace LFM.FileSorter.UI.Interfaces
 {
     public interface ITextFileSorterService : IBaseService
     {
@@ -8,6 +11,6 @@
         /// <param name="inputFileTextPath"></param>
         /// <param name="outputFileTextPath"></param>
         /// <returns></returns>
-        Task SortTextFile(string inputFileTextPath, string outputFileTextPath);
+        Task SortTextFile(string inputFileTextPath, string outputFileTextPath, FileSorterViewModel model);
     }
 }

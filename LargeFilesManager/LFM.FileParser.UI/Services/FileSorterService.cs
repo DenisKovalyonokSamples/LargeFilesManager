@@ -3,24 +3,26 @@ using LFM.Core.Comparers;
 using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Helpers;
-using LFM.Core.Interfaces;
 using LFM.Core.Models;
 using LFM.Core.Services;
+using LFM.FileSorter.UI.Interfaces;
+using LFM.FileSorter.UI.ViewModels;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Text;
 
-namespace LFM.FileSorter.BL.Services
+namespace LFM.FileSorter.UI.Services
 {
-    public class TextFileSorterService : BaseService, ITextFileSorterService
+    public class FileSorterService : BaseService, ITextFileSorterService
     {
         public List<string> PartFileTextPaths { get; set; }
 
-        public TextFileSorterService() : base()
+        public FileSorterService() : base()
         {
             PartFileTextPaths = new List<string>();
         }
 
-        public async Task SortTextFile(string inputFileTextPath, string outputFileTextPath)
+        public async Task SortTextFile(string inputFileTextPath, string outputFileTextPath, FileSorterViewModel model)
         {
             ProgressValue = 0;
             ProgressMinValue = 0;
@@ -38,9 +40,7 @@ namespace LFM.FileSorter.BL.Services
             // Delete temporary part files after merging.
             DeletePartFiles(PartFileTextPaths);
             PartFileTextPaths = new List<string>();
-
-            //var files = Directory.GetFiles("\\AppData\\Local\\Temp\\0c52515a-5c9a-4bfe-9a43-73e6c06db3dc", "*_sorted_part_*.txt");
-            //MergeSortedPartFiles(files.ToList(), outputFileTextPath);
+            model.IsFileInformationPanelEnabled = true;
         }
 
         private async Task SplitFiles(string inputFileTextPath, string outputFileTextPath, int totalConsumerTasks, long maxPartFileSizeMegaBytes)

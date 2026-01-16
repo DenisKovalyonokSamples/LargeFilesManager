@@ -2,6 +2,7 @@
 using LFM.Core.Constants;
 using LFM.Core.Models;
 using LFM.Core.Services;
+using LFM.FileSorter.UI.Services;
 using Serilog;
 using System.Windows;
 using System.Windows.Input;
@@ -58,12 +59,24 @@ namespace LFM.FileSorter.UI.ViewModels
             }
         }
 
+        private bool _isFileInformationPanelEnabled;
+        public bool IsFileInformationPanelEnabled
+        {
+            get => _isFileInformationPanelEnabled;
+            set
+            {
+                _isFileInformationPanelEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         public FileSorterViewModel() : base()
         {
             _inputFileNamePath = string.Empty;
             _outputFileNamePath = string.Empty;
+            _isFileInformationPanelEnabled = true;
 
             SelectInputFileTextCommand = new RelayCommand(SelectInputFileText);
             SelectOutputFileTextCommand = new RelayCommand(SelectOutputFileText);
@@ -94,8 +107,8 @@ namespace LFM.FileSorter.UI.ViewModels
 
             using var dialog = new System.Windows.Forms.OpenFileDialog();
             dialog.Multiselect = false;
-            dialog.Filter = ServiceLocator.StringLocalizer[TranslationConstant.DialogFilter];
-            dialog.Title = ServiceLocator.StringLocalizer[TranslationConstant.BrowseFolder];
+            dialog.Filter = ServiceManager.StringLocalizer[TranslationConstant.DialogFilter];
+            dialog.Title = ServiceManager.StringLocalizer[TranslationConstant.BrowseFolder];
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 fileNamePath = dialog.FileName;
@@ -111,7 +124,7 @@ namespace LFM.FileSorter.UI.ViewModels
             ProgressBarValueMax = ServiceLocator.TextFileSorterService.ProgressMaxValue;
             ProgressBarValue = ServiceLocator.TextFileSorterService.ProgressValue;
 
-            string stopWatchElapsedFormat = ServiceLocator.StringLocalizer[TranslationConstant.StopWatchElapsedFormat];
+            string stopWatchElapsedFormat = ServiceManager.StringLocalizer[TranslationConstant.StopWatchElapsedFormat];
             ProgressBarElapsed = StopWatch.Elapsed.ToString(stopWatchElapsedFormat);
 
             if (ServiceLocator.TextFileSorterService.IsDispatcherTimerStopped)
@@ -130,22 +143,22 @@ namespace LFM.FileSorter.UI.ViewModels
             // Set wait cursor
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 
+            IsFileInformationPanelEnabled = false;
             ProgressBarSatus = string.Empty;
             ProgressBarValueMin = 0;
             ProgressBarValueMax = 100;
 
             ProgressBarVisibility = Visibility.Visible;
 
-            string message = ServiceLocator.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
+            string message = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
             Log.Information(message);
 
             StopWatch.Start();
             DispatcherTimer.Start();
 
-
             await Task.Run(() =>
             {
-                ServiceLocator.TextFileSorterService.SortTextFile(InputFileNamePath, OutputFileNamePath);
+                ServiceLocator.TextFileSorterService.SortTextFile(InputFileNamePath, OutputFileNamePath, this);
             });
         }
     }

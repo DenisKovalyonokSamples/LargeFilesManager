@@ -1,8 +1,8 @@
-﻿using LFM.Core.Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
-using LFM.FileGenerator.BL.Services;
 using LFM.Core.Helpers;
+using LFM.FileGenerator.UI.Services;
+using LFM.FileGenerator.UI.Interfaces;
 
 namespace LFM.FileGenerator.UI
 {
@@ -13,7 +13,7 @@ namespace LFM.FileGenerator.UI
             var builder = AppStartupHelper.CreateAppBuilder();
 
             // Register application services
-            builder.Services.AddScoped<ITextFileGeneratorService, TextFileGeneratorService>();
+            builder.Services.AddScoped<ITextFileGeneratorService, FileGeneratorService>();
             builder.Services.AddSingleton<MainWindow>();
 
             AppStartupHelper.CreateAppHost(builder, this);

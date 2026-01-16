@@ -3,6 +3,7 @@ using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Models;
 using LFM.Core.Services;
+using LFM.FileGenerator.UI.Services;
 using Serilog;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -58,6 +59,17 @@ namespace LFM.FileGenerator.UI.ViewModels
             }
         }
 
+        private bool _isFileInformationPanelEnabled;
+        public bool IsFileInformationPanelEnabled
+        {
+            get => _isFileInformationPanelEnabled;
+            set
+            {
+                _isFileInformationPanelEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _fileTextLineLengthMax;
         public int FileTextLineLengthMax
         {
@@ -109,8 +121,9 @@ namespace LFM.FileGenerator.UI.ViewModels
             FilePath = string.Empty;
             FileName = string.Empty;
             FileSize = 0;
+            _isFileInformationPanelEnabled = true;
 
-            FileTextLineLengthMax = ServiceLocator.AppSettings.Value.DefaultFileTextLineLengthMax;
+            FileTextLineLengthMax = ServiceManager.AppSettings.Value.DefaultFileTextLineLengthMax;
 
             FileSizeTypes = new ObservableCollection<FileSizeType>(Enum.GetValues(typeof(FileSizeType)).Cast<FileSizeType>().ToList());
             SelectedFileSizeType = FileSizeType.GB;
@@ -128,7 +141,7 @@ namespace LFM.FileGenerator.UI.ViewModels
             ProgressBarValueMax = ServiceLocator.TextFileGeneratorService.ProgressMaxValue;
             ProgressBarValue = ServiceLocator.TextFileGeneratorService.ProgressValue;
 
-            string stopWatchElapsedFormat = ServiceLocator.StringLocalizer[TranslationConstant.StopWatchElapsedFormat];
+            string stopWatchElapsedFormat = ServiceManager.StringLocalizer[TranslationConstant.StopWatchElapsedFormat];
             ProgressBarElapsed = StopWatch.Elapsed.ToString(stopWatchElapsedFormat);
 
             if (ServiceLocator.TextFileGeneratorService.IsDispatcherTimerStopped)
@@ -147,8 +160,9 @@ namespace LFM.FileGenerator.UI.ViewModels
             // Set wait cursor
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 
+            IsFileInformationPanelEnabled = false;
             ProgressBarVisibility = Visibility.Visible;
-            string message = ServiceLocator.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
+            string message = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
             Log.Information(message);
 
             StopWatch.Start();
@@ -158,12 +172,14 @@ namespace LFM.FileGenerator.UI.ViewModels
             {
                 ServiceLocator.TextFileGeneratorService.WriteTextFile(FilePath, FileName, FileSize, SelectedFileSizeType, FileTextLineLengthMax);
             });
+
+            IsFileInformationPanelEnabled = true;
         }
 
         private void BrowseFolder()
         {
             using var dialog = new FolderBrowserDialog();
-            string description = ServiceLocator.StringLocalizer[TranslationConstant.FolderBrowserDialogDescriptionSelectFolder];
+            string description = ServiceManager.StringLocalizer[TranslationConstant.FolderBrowserDialogDescriptionSelectFolder];
             dialog.Description = description;
             dialog.ShowNewFolderButton = true;
 
