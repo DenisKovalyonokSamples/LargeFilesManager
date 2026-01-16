@@ -7,13 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.Core", "LFM.Core\LFM.Co
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileSorter.UI", "LFM.FileParser.UI\LFM.FileSorter.UI.csproj", "{A4166008-7488-45C1-9188-CE4A9C9FB65B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileSorter", "LFM.FileParser.UI\LFM.FileSorter.csproj", "{A4166008-7488-45C1-9188-CE4A9C9FB65B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileGenerator", "LFM.FileGenerator.UI\LFM.FileGenerator.csproj", "{06D46620-E04B-4FB1-9F2A-BAADC84463EB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileGenerator.Tests", "LFM.FileGenerator.UI.Tests\LFM.FileGenerator.Tests.csproj", "{B6A9AF9A-6D08-409F-AF4B-1581DC108743}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileSorter.UI.Tests", "LFM.FileSorter.UI.Tests\LFM.FileSorter.UI.Tests.csproj", "{22B95FBE-CCDA-4B5E-A155-E61B389F8117}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LFM.FileSorter.Tests", "LFM.FileSorter.UI.Tests\LFM.FileSorter.Tests.csproj", "{22B95FBE-CCDA-4B5E-A155-E61B389F8117}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

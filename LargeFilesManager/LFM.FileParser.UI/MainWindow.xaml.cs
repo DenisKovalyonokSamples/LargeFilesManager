@@ -1,7 +1,7 @@
-﻿using LFM.FileSorter.UI.ViewModels;
+﻿using LFM.FileSorter.ViewModels;
 using System.Windows;
 
-namespace LFM.FileSorter.UI
+namespace LFM.FileSorter
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

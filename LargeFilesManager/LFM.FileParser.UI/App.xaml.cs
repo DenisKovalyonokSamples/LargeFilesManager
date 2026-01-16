@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Windows;
 using LFM.Core.Helpers;
-using LFM.FileSorter.UI.Services;
-using LFM.FileSorter.UI.Interfaces;
+using LFM.FileSorter.Services;
+using LFM.FileSorter.Interfaces;
 
-namespace LFM.FileSorter.UI
+namespace LFM.FileSorter
 {
     public partial class App : System.Windows.Application
     {

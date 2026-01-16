@@ -1,8 +1,8 @@
 ﻿using LFM.Core;
-using LFM.FileSorter.UI.Interfaces;
+using LFM.FileSorter.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace LFM.FileSorter.UI.Services
+namespace LFM.FileSorter.Services
 {
     public static class ServiceLocator
     {

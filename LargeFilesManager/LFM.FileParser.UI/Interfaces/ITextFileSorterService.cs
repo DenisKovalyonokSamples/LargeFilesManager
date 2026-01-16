@@ -1,7 +1,7 @@
 ﻿using LFM.Core.Interfaces;
-using LFM.FileSorter.UI.ViewModels;
+using LFM.FileSorter.ViewModels;
 
-namespace LFM.FileSorter.UI.Interfaces
+namespace LFM.FileSorter.Interfaces
 {
     public interface ITextFileSorterService : IBaseService
     {

@@ -2,12 +2,12 @@
 using LFM.Core.Constants;
 using LFM.Core.Models;
 using LFM.Core.Services;
-using LFM.FileSorter.UI.Services;
+using LFM.FileSorter.Services;
 using Serilog;
 using System.Windows;
 using System.Windows.Input;
 
-namespace LFM.FileSorter.UI.ViewModels
+namespace LFM.FileSorter.ViewModels
 {
     public class FileSorterViewModel : BaseViewModel
     {

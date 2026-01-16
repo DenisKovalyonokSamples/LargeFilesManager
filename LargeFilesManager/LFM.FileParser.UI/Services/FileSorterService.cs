@@ -5,13 +5,13 @@ using LFM.Core.Enums;
 using LFM.Core.Helpers;
 using LFM.Core.Models;
 using LFM.Core.Services;
-using LFM.FileSorter.UI.Interfaces;
-using LFM.FileSorter.UI.ViewModels;
+using LFM.FileSorter.Interfaces;
+using LFM.FileSorter.ViewModels;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 
-namespace LFM.FileSorter.UI.Services
+namespace LFM.FileSorter.Services
 {
     public class FileSorterService : BaseService, ITextFileSorterService
     {

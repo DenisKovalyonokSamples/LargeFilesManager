@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LFM.FileParser.UI\LFM.FileSorter.UI.csproj" />
+    <ProjectReference Include="..\LFM.FileParser.UI\LFM.FileSorter.csproj" />
   </ItemGroup>
 
   <ItemGroup>

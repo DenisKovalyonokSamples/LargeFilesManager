@@ -1,13 +1,13 @@
 ﻿using LFM.Core;
 using LFM.Core.Localization;
 using LFM.Core.Services;
-using LFM.FileSorter.UI.Services;
+using LFM.FileSorter.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Serilog;
 
-namespace LFM.FileSorter.UI.Tests.UnitTests
+namespace LFM.FileSorter.Tests.UnitTests
 {
     public class FileSorterTests
     {
