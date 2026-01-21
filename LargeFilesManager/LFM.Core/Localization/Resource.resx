@@ -255,4 +255,25 @@
   <data name="SortedFilePartName" xml:space="preserve">
     <value>{0}_sorted_part{1}.txt</value>
   </data>
+  <data name="GenerateTextFile_Status_Init" xml:space="preserve">
+    <value>Status: Please fill required file information for the generation process.</value>
+  </data>
+  <data name="GenerateTextFile_Status_InProgress" xml:space="preserve">
+    <value>Status: File generation process is in progress...</value>
+  </data>
+  <data name="GenerateTextFile_Status_Completed" xml:space="preserve">
+    <value>Status: File generation process completed.</value>
+  </data>
+  <data name="SortTextFile_Status_Init" xml:space="preserve">
+    <value>Status: Please fill required information for the file sorting process.</value>
+  </data>
+  <data name="SortTextFile_Status_InProgress" xml:space="preserve">
+    <value>Status: File sorting process is in progress...</value>
+  </data>
+  <data name="SortTextFile_Status_Completed" xml:space="preserve">
+    <value>Status: File sorting process completed.</value>
+  </data>
+  <data name="ResetProcessButtonName" xml:space="preserve">
+    <value>Reset Form</value>
+  </data>
 </root>

@@ -20,6 +20,12 @@
 
         public const string GenerateFileButtonName = "GenerateFileButtonName";
         public const string GenerateTextFileButtonClicked = "GenerateTextFile_Button_Clicked";
+        public const string GenerateTextFileStatusInit = "GenerateTextFile_Status_Init";
+        public const string GenerateTextFileStatusInProgress = "GenerateTextFile_Status_InProgress";
+        public const string GenerateTextFileStatusCompleted = "GenerateTextFile_Status_Completed";
+        public const string SortTextFileStatusInit = "SortTextFile_Status_Init";
+        public const string SortTextFileStatusInProgress = "SortTextFile_Status_InProgress";
+        public const string SortTextFileStatusCompleted = "SortTextFile_Status_Completed";
 
         public const string StopWatchElapsedFormat = "StopWatchElapsedFormat";
 

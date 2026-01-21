@@ -205,6 +205,33 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Status: File generation process completed..
+        /// </summary>
+        internal static string GenerateTextFile_Status_Completed {
+            get {
+                return ResourceManager.GetString("GenerateTextFile_Status_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status: Please fill required file information for the generation process..
+        /// </summary>
+        internal static string GenerateTextFile_Status_Init {
+            get {
+                return ResourceManager.GetString("GenerateTextFile_Status_Init", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status: File generation process is in progress....
+        /// </summary>
+        internal static string GenerateTextFile_Status_InProgress {
+            get {
+                return ResourceManager.GetString("GenerateTextFile_Status_InProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input :.
         /// </summary>
         internal static string Input {
@@ -295,6 +322,15 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Reset Form.
+        /// </summary>
+        internal static string ResetProcessButtonName {
+            get {
+                return ResourceManager.GetString("ResetProcessButtonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Select File.
         /// </summary>
         internal static string SelectFile {
@@ -327,6 +363,33 @@ namespace LFM.Core.Localization {
         internal static string SortFileButtonName {
             get {
                 return ResourceManager.GetString("SortFileButtonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status: File sorting process completed..
+        /// </summary>
+        internal static string SortTextFile_Status_Completed {
+            get {
+                return ResourceManager.GetString("SortTextFile_Status_Completed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status: Please fill required information for the file sorting process..
+        /// </summary>
+        internal static string SortTextFile_Status_Init {
+            get {
+                return ResourceManager.GetString("SortTextFile_Status_Init", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Status: File sorting process is in progress....
+        /// </summary>
+        internal static string SortTextFile_Status_InProgress {
+            get {
+                return ResourceManager.GetString("SortTextFile_Status_InProgress", resourceCulture);
             }
         }
         

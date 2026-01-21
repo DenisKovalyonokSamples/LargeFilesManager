@@ -70,6 +70,28 @@ namespace LFM.FileGenerator.ViewModels
             }
         }
 
+        private string _progresStatus = string.Empty;
+        public string ProgresStatus
+        {
+            get => _progresStatus;
+            set
+            {
+                _progresStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _progresStatusColor = string.Empty;
+        public string ProgresStatusColor
+        {
+            get => _progresStatusColor;
+            set
+            {
+                _progresStatusColor = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _fileTextLineLengthMax;
         public int FileTextLineLengthMax
         {
@@ -96,21 +118,36 @@ namespace LFM.FileGenerator.ViewModels
             }
         }
 
+        private bool _isFileGeneratorButtonEnabled;
+        public bool IsFileGeneratorButtonEnabled
+        {
+            get => _isFileGeneratorButtonEnabled;
+            set
+            {
+                _isFileGeneratorButtonEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool _canExecuteGenerateTextFile;
         private bool CanExecuteGenerateTextFile
         {
-            get => _canExecuteGenerateTextFile && !string.IsNullOrWhiteSpace(FilePath)
-                                               && !string.IsNullOrWhiteSpace(FileName)
-                                               && FileSize > 0
-                                               && FileTextLineLengthMax > 0;
+            get => IsStatusPanelFilled;
             set
             {
                 _canExecuteGenerateTextFile = value;
+                IsFileGeneratorButtonEnabled = IsStatusPanelFilled;
                 OnPropertyChanged();
                 ((RelayCommand)GenerateTextFileCommand)?.NotifyCanExecuteChanged();
             }
         }
+
         #endregion
+
+        private bool IsStatusPanelFilled => _canExecuteGenerateTextFile && !string.IsNullOrWhiteSpace(FilePath)
+                                               && !string.IsNullOrWhiteSpace(FileName)
+                                               && FileSize > 0
+                                               && FileTextLineLengthMax > 0;
 
         public FileGeneratorViewModel() : base()
         {
@@ -122,6 +159,8 @@ namespace LFM.FileGenerator.ViewModels
             FileName = string.Empty;
             FileSize = 0;
             _isFileInformationPanelEnabled = true;
+            _isFileGeneratorButtonEnabled = false;
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileStatusInit];
 
             FileTextLineLengthMax = ServiceManager.AppSettings.Value.DefaultFileTextLineLengthMax;
 
@@ -131,11 +170,23 @@ namespace LFM.FileGenerator.ViewModels
 
             BrowseFolderCommand = new RelayCommand(BrowseFolder);
             GenerateTextFileCommand = new RelayCommand(async () => await GenerateTextFile(), () => CanExecuteGenerateTextFile);
+            ResetFormCommand = new RelayCommand(ResetForm);
+        }
+
+        private void ResetForm()
+        {
+            FilePath = string.Empty;
+            FileName = string.Empty;
+            IsFileInformationPanelEnabled = true;
+            IsResetProcessButtonEnabled = false;
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusInit];
+
+            ResetProgressPanel();
         }
 
         protected override void Timer_Click(object? sender, EventArgs e)
         {
-            ProgressBarSatus = ServiceLocator.TextFileGeneratorService.ProgressSatus;
+            ProgressBarStatus = ServiceLocator.TextFileGeneratorService.ProgressSatus;
 
             ProgressBarValueMin = ServiceLocator.TextFileGeneratorService.ProgressMinValue;
             ProgressBarValueMax = ServiceLocator.TextFileGeneratorService.ProgressMaxValue;
@@ -161,9 +212,11 @@ namespace LFM.FileGenerator.ViewModels
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 
             IsFileInformationPanelEnabled = false;
+            IsFileGeneratorButtonEnabled = false;
+
             ProgressBarVisibility = Visibility.Visible;
-            string message = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
-            Log.Information(message);
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileStatusInProgress];
+            Log.Information(ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked]);
 
             StopWatch.Start();
             DispatcherTimer.Start();
@@ -173,7 +226,9 @@ namespace LFM.FileGenerator.ViewModels
                 ServiceLocator.TextFileGeneratorService.WriteTextFile(FilePath, FileName, FileSize, SelectedFileSizeType, FileTextLineLengthMax);
             });
 
-            IsFileInformationPanelEnabled = true;
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileStatusCompleted];
+            IsFileGeneratorButtonEnabled = false;
+            IsResetProcessButtonEnabled = true;
         }
 
         private void BrowseFolder()

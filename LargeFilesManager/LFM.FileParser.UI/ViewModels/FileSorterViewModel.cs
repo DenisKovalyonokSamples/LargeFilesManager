@@ -11,7 +11,7 @@ namespace LFM.FileSorter.ViewModels
 {
     public class FileSorterViewModel : BaseViewModel
     {
-        #region [ Commands]
+        #region Commands
 
         public ICommand SelectInputFileTextCommand { get; set; }
 
@@ -21,7 +21,7 @@ namespace LFM.FileSorter.ViewModels
 
         #endregion
 
-        #region [ Properties ]
+        #region Properties
 
         private string _inputFileNamePath;
         public string InputFileNamePath
@@ -54,6 +54,7 @@ namespace LFM.FileSorter.ViewModels
             set
             {
                 _canExecuteSortTextFile = value;
+                IsFileSorterButtonEnabled = _canExecuteSortTextFile && !string.IsNullOrEmpty(InputFileNamePath) && !string.IsNullOrEmpty(OutputFileNamePath);
                 OnPropertyChanged();
                 ((RelayCommand)SortTextFileCommand).NotifyCanExecuteChanged();
             }
@@ -70,6 +71,28 @@ namespace LFM.FileSorter.ViewModels
             }
         }
 
+        private bool _isFileSorterButtonEnabled;
+        public bool IsFileSorterButtonEnabled
+        {
+            get => _isFileSorterButtonEnabled;
+            set
+            {
+                _isFileSorterButtonEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _progresStatus = string.Empty;
+        public string ProgresStatus
+        {
+            get => _progresStatus;
+            set
+            {
+                _progresStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
         #endregion
 
         public FileSorterViewModel() : base()
@@ -77,10 +100,14 @@ namespace LFM.FileSorter.ViewModels
             _inputFileNamePath = string.Empty;
             _outputFileNamePath = string.Empty;
             _isFileInformationPanelEnabled = true;
+            _isFileSorterButtonEnabled = false;
+            IsResetProcessButtonEnabled = false;
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusInit];
 
             SelectInputFileTextCommand = new RelayCommand(SelectInputFileText);
             SelectOutputFileTextCommand = new RelayCommand(SelectOutputFileText);
             SortTextFileCommand = new RelayCommand(async () => await SortTextFile(), () => CanExecuteSortTextFile);
+            ResetFormCommand = new RelayCommand(ResetForm);
         }
 
         private void SelectInputFileText()
@@ -101,6 +128,17 @@ namespace LFM.FileSorter.ViewModels
             }
         }
 
+        private void ResetForm()
+        {
+            InputFileNamePath = string.Empty;
+            OutputFileNamePath = string.Empty;
+            IsFileInformationPanelEnabled = true;
+            IsFileSorterButtonEnabled = false;
+            IsResetProcessButtonEnabled = false;
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusInit];
+            ResetProgressPanel();
+        }
+
         private string GetSelectedFile()
         {
             string fileNamePath = string.Empty;
@@ -118,7 +156,7 @@ namespace LFM.FileSorter.ViewModels
 
         protected override void Timer_Click(object? sender, EventArgs e)
         {
-            ProgressBarSatus = ServiceLocator.TextFileSorterService.ProgressSatus;
+            ProgressBarStatus = ServiceLocator.TextFileSorterService.ProgressSatus;
 
             ProgressBarValueMin = ServiceLocator.TextFileSorterService.ProgressMinValue;
             ProgressBarValueMax = ServiceLocator.TextFileSorterService.ProgressMaxValue;
@@ -144,14 +182,14 @@ namespace LFM.FileSorter.ViewModels
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
 
             IsFileInformationPanelEnabled = false;
-            ProgressBarSatus = string.Empty;
+            IsFileSorterButtonEnabled = false;
+            ProgressBarStatus = string.Empty;
             ProgressBarValueMin = 0;
             ProgressBarValueMax = 100;
 
             ProgressBarVisibility = Visibility.Visible;
-
-            string message = ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked];
-            Log.Information(message);
+            ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusInProgress];
+            Log.Information(ServiceManager.StringLocalizer[TranslationConstant.GenerateTextFileButtonClicked]);
 
             StopWatch.Start();
             DispatcherTimer.Start();

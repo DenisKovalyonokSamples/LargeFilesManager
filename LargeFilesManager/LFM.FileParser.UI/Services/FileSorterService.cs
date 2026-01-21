@@ -40,7 +40,10 @@ namespace LFM.FileSorter.Services
             // Delete temporary part files after merging.
             DeletePartFiles(PartFileTextPaths);
             PartFileTextPaths = new List<string>();
-            model.IsFileInformationPanelEnabled = true;
+            model.ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusCompleted];
+            model.IsFileSorterButtonEnabled = false;
+            model.IsResetProcessButtonEnabled = true;
+
         }
 
         private async Task SplitFiles(string inputFileTextPath, string outputFileTextPath, int totalConsumerTasks, long maxPartFileSizeMegaBytes)

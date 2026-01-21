@@ -63,13 +63,31 @@
                 </Grid>
             </GroupBox>
             <StackPanel VerticalAlignment="Top">
-                <Button Grid.Row="2" Grid.Column="1" Name="GenerateFileButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
-                    Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green"
-                    IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{i18n:StringLocalizer 'Generate Text File'}" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Button>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="522"/>
+                        <ColumnDefinition Width="138"/>
+                        <ColumnDefinition Width="138"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Label Grid.Column="0" Name="ProcessStatusLabel" HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                           Margin="8, 0, 0, 0" Content="{Binding ProgresStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Button Grid.Column="1" Name="ResetButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Command="{Binding ResetFormCommand}" Margin="5,35,0,2" Background="Green" IsEnabled="{Binding IsResetProcessButtonEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{i18n:StringLocalizer 'ResetProcessButtonName'}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Grid.Column="2" Name="GenerateFileButton" Height="22" Width="120" HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green"
+                        IsEnabled="{Binding IsFileGeneratorButtonEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{i18n:StringLocalizer 'Generate Text File'}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
                 <GroupBox x:Name="groupBoxone" Header="Generation progress" Margin="10,10,10, 20">
                     <controls:ProgressPanel />
                 </GroupBox>

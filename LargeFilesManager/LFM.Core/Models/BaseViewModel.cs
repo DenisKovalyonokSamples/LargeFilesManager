@@ -4,12 +4,19 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace LFM.Core.Models
 {
     public class BaseViewModel : INotifyPropertyChanged
     {
+        #region Commands
+
+        public ICommand ResetFormCommand { get; set; }
+
+        #endregion
+
         #region Properties 
 
         private Visibility _progressBarVisibility;
@@ -77,13 +84,13 @@ namespace LFM.Core.Models
             }
         }
 
-        private string _progressBarSatus;
-        public string ProgressBarSatus
+        private string _progressBarStatus;
+        public string ProgressBarStatus
         {
-            get => _progressBarSatus;
+            get => _progressBarStatus;
             set
             {
-                _progressBarSatus = value;
+                _progressBarStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -110,6 +117,17 @@ namespace LFM.Core.Models
             }
         }
 
+        private bool _isResetProcessButtonEnabled;
+        public bool IsResetProcessButtonEnabled
+        {
+            get => _isResetProcessButtonEnabled;
+            set
+            {
+                _isResetProcessButtonEnabled = value;
+                OnPropertyChanged();
+            }
+        }
+
         protected DispatcherTimer DispatcherTimer { get; set; }
         protected Stopwatch StopWatch { get; set; }
 
@@ -121,7 +139,7 @@ namespace LFM.Core.Models
         {
             ProgressBarVisibility = Visibility.Hidden;
 
-            _progressBarSatus = string.Empty;
+            _progressBarStatus = string.Empty;
             _progressBarValueString = string.Empty;
             _progressBarElapsed = string.Empty;
 
@@ -136,6 +154,20 @@ namespace LFM.Core.Models
 
             DispatcherTimer.Tick += Timer_Click;
             StopWatch = new Stopwatch();
+        }
+
+        public void ResetProgressPanel()
+        {   
+            ProgressBarVisibility = Visibility.Hidden;
+            ProgressBarValueMin = 0;
+            ProgressBarValueMax = 100;
+            ProgressBarValue = 0;
+            ProgressBarStatus = string.Empty;
+            ProgressBarValueString = string.Empty;
+            ProgressBarElapsed = string.Empty;
+
+            //StopWatch.Reset();
+            //DispatcherTimer.Stop();
         }
 
         private string GetProgressBarValueString(FileSizeType fileSizeType, decimal maxValue, decimal value)
