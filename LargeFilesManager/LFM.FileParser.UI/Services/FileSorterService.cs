@@ -24,10 +24,9 @@ namespace LFM.FileSorter.Services
 
         public async Task SortTextFile(string inputFileTextPath, string outputFileTextPath, FileSorterViewModel model)
         {
-            ProgressValue = 0;
-            ProgressMinValue = 0;
-            ProgressMaxValue = 100;
-            ProgressSatus = ServiceManager.StringLocalizer[TranslationConstant.TextFileStartedToBeSorted];
+            //Ensure clean state at entry.
+            ResetProgressPanelState(); 
+            ProgressStatus = ServiceManager.StringLocalizer[TranslationConstant.TextFileStartedToBeSorted];
 
             // Split the input file into sorted parts.
             await SplitFiles(inputFileTextPath, outputFileTextPath, AppSettings.TotalConsumerTasks, AppSettings.MaxPartFileSizeMegaBytes);
@@ -43,13 +42,12 @@ namespace LFM.FileSorter.Services
             model.ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusCompleted];
             model.IsFileSorterButtonEnabled = false;
             model.IsResetProcessButtonEnabled = true;
-
         }
 
         private async Task SplitFiles(string inputFileTextPath, string outputFileTextPath, int totalConsumerTasks, long maxPartFileSizeMegaBytes)
         {
             string splitInputFileInMultipleSortedPartsFormat = string.Format(ServiceManager.StringLocalizer[TranslationConstant.SplitInputFileInMultipleSortedParts], inputFileTextPath);
-            ProgressSatus = splitInputFileInMultipleSortedPartsFormat;
+            ProgressStatus = splitInputFileInMultipleSortedPartsFormat;
 
             // Get the size of the input file in bytes.
             string fileName = Path.GetFileNameWithoutExtension(inputFileTextPath);
@@ -110,7 +108,7 @@ namespace LFM.FileSorter.Services
                         }
 
                         string partFileIsSortedFormat = string.Format(ServiceManager.StringLocalizer[TranslationConstant.PartFileIsSorted], partFilePath);
-                        ProgressSatus = partFileIsSortedFormat;
+                        ProgressStatus = partFileIsSortedFormat;
 
                         // Write sorted lines to the part file.
                         File.WriteAllLines(partFilePath, partQueue.Lines);
@@ -205,8 +203,7 @@ namespace LFM.FileSorter.Services
         {
             // Implementation for merging sorted part files into a single output file
             // This can be done using a priority queue (min-heap) to efficiently merge the sorted files.
-
-            ProgressSatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergingSortedPartFileInto], partFileTextPaths.Count, outputFileTextPath);
+            ProgressStatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergingSortedPartFileInto], partFileTextPaths.Count, outputFileTextPath);
             ProgressMinValue = 0;
             ProgressMaxValue = partFileTextPaths.Sum(x => new FileInfo(x).Length);
             ProgressValue = 0;

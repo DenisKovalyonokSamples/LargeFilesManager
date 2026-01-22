@@ -21,6 +21,9 @@ namespace LFM.FileGenerator.Services
 
         public void WriteTextFile(string filePath, string fileName, long fileSize, FileSizeType fileSizeType, int maxLineLength)
         {
+            // Ensure clean state at entry.
+            ResetProgressPanelState();
+
             int bufferSize = AppSettings.BufferFileWriteSize * 1024; // number KB buffer size
             int numberOfFilesToWriteInParallel = Math.Max(1, ProcessorCount);
 
@@ -33,7 +36,7 @@ namespace LFM.FileGenerator.Services
             long sizePerFile = targetFileSizeInBytes / numberOfFilesToWriteInParallel;
             string[] filePartPaths = new string[numberOfFilesToWriteInParallel];
 
-            ProgressSatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.PartFilesToWriteInParallel], numberOfFilesToWriteInParallel);
+            ProgressStatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.PartFilesToWriteInParallel], numberOfFilesToWriteInParallel);
 
             string fulllFileNamePath = Path.Combine(filePath, fileName);
             var filePathsToDelete = filePartPaths.ToList();
@@ -157,7 +160,7 @@ namespace LFM.FileGenerator.Services
         private void MergeFileParts(string[] filePartPaths, string filePath, string fileName, int bufferSize)
         {
             string fulllFileNamePath = Path.Combine(filePath, fileName);
-            ProgressSatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergeFilePartInto], filePartPaths.Length, fulllFileNamePath);
+            ProgressStatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergeFilePartInto], filePartPaths.Length, fulllFileNamePath);
 
             ProgressValue = 0;
             ProgressMinValue = 0;
@@ -199,7 +202,7 @@ namespace LFM.FileGenerator.Services
                 // Delete part file after merging.
                 DeleteFile(filePartPaths.ToList());
 
-                ProgressSatus = ServiceManager.StringLocalizer[TranslationConstant.FileWritingMergingCompleted];
+                ProgressStatus = ServiceManager.StringLocalizer[TranslationConstant.FileWritingMergingCompleted];
                 IsDispatcherTimerStopped = true;
             }
         }

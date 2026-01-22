@@ -16,7 +16,7 @@
 
         protected ulong LineNumber { get; set; }
 
-        public string ProgressSatus { get; set; }
+        public string ProgressStatus { get; set; }
 
         public int ProgressMinValue { get; set; }
 
@@ -34,7 +34,7 @@
             LineNumberLock = new object();
             ProgressLock = new object();
             LineNumber = 0;
-            ProgressSatus = string.Empty;
+            ProgressStatus = string.Empty;
             ProgressMinValue = 0;
             ProgressMaxValue = 0;
             ProgressValue = 0;
@@ -47,6 +47,15 @@
             GC.WaitForPendingFinalizers();
             GC.WaitForFullGCComplete();
             GC.Collect();
+        }
+
+        public void ResetProgressPanelState()
+        {
+            IsDispatcherTimerStopped = false;
+            ProgressMinValue = 0;
+            ProgressMaxValue = 100;
+            ProgressValue = 0;
+            ProgressStatus = string.Empty;
         }
     }
 }

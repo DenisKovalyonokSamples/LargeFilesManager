@@ -156,7 +156,7 @@ namespace LFM.FileSorter.ViewModels
 
         protected override void Timer_Click(object? sender, EventArgs e)
         {
-            ProgressBarStatus = ServiceLocator.TextFileSorterService.ProgressSatus;
+            ProgressBarStatus = ServiceLocator.TextFileSorterService.ProgressStatus;
 
             ProgressBarValueMin = ServiceLocator.TextFileSorterService.ProgressMinValue;
             ProgressBarValueMax = ServiceLocator.TextFileSorterService.ProgressMaxValue;
@@ -180,12 +180,12 @@ namespace LFM.FileSorter.ViewModels
         {
             // Set wait cursor
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            // Reset UI and service state BEFORE starting a new run
+            ResetProgressPanel();
+            ServiceLocator.TextFileSorterService.ResetProgressPanelState();
 
             IsFileInformationPanelEnabled = false;
             IsFileSorterButtonEnabled = false;
-            ProgressBarStatus = string.Empty;
-            ProgressBarValueMin = 0;
-            ProgressBarValueMax = 100;
 
             ProgressBarVisibility = Visibility.Visible;
             ProgresStatus = ServiceManager.StringLocalizer[TranslationConstant.SortTextFileStatusInProgress];

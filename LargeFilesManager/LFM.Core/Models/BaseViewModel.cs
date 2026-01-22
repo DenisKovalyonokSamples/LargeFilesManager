@@ -157,7 +157,12 @@ namespace LFM.Core.Models
         }
 
         public void ResetProgressPanel()
-        {   
+        {
+            //Stop producing updates. Clears elapsed time to 0. Without it, a subsequent Start() would continue from the previous run, and the next tick would show an old elapsed value.
+            StopWatch.Reset();
+            // Zero elapsed. If itwill not be stopped, it will immediately repopulate the cleared properties (elapsed, values, status) and keep consuming CPU.
+            DispatcherTimer.Stop();
+
             ProgressBarVisibility = Visibility.Hidden;
             ProgressBarValueMin = 0;
             ProgressBarValueMax = 100;
@@ -165,9 +170,6 @@ namespace LFM.Core.Models
             ProgressBarStatus = string.Empty;
             ProgressBarValueString = string.Empty;
             ProgressBarElapsed = string.Empty;
-
-            //StopWatch.Reset();
-            //DispatcherTimer.Stop();
         }
 
         private string GetProgressBarValueString(FileSizeType fileSizeType, decimal maxValue, decimal value)

@@ -186,7 +186,7 @@ namespace LFM.FileGenerator.ViewModels
 
         protected override void Timer_Click(object? sender, EventArgs e)
         {
-            ProgressBarStatus = ServiceLocator.TextFileGeneratorService.ProgressSatus;
+            ProgressBarStatus = ServiceLocator.TextFileGeneratorService.ProgressStatus;
 
             ProgressBarValueMin = ServiceLocator.TextFileGeneratorService.ProgressMinValue;
             ProgressBarValueMax = ServiceLocator.TextFileGeneratorService.ProgressMaxValue;
@@ -202,7 +202,7 @@ namespace LFM.FileGenerator.ViewModels
                 StopWatch.Stop();
 
                 // Reset cursor 
-                Mouse.OverrideCursor = null;
+                Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
             }
         }
 
@@ -210,6 +210,9 @@ namespace LFM.FileGenerator.ViewModels
         {
             // Set wait cursor
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+            // Reset UI and service state BEFORE starting a new run
+            ResetProgressPanel();
+            ServiceLocator.TextFileGeneratorService.ResetProgressPanelState();
 
             IsFileInformationPanelEnabled = false;
             IsFileGeneratorButtonEnabled = false;

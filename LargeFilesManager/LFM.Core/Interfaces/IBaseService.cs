@@ -2,7 +2,7 @@
 {
     public interface IBaseService
     {
-        string ProgressSatus { get; }
+        string ProgressStatus { get; }
 
         int ProgressMinValue { get; }
 
@@ -11,5 +11,7 @@
         long ProgressValue { get; }
 
         bool IsDispatcherTimerStopped { get; }
+
+        void ResetProgressPanelState();
     }
 }
