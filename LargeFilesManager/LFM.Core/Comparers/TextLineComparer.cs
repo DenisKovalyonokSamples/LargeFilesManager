@@ -26,7 +26,7 @@
             if (parts.Length < 2)
                 return (0, inputLine);
 
-            // If parsing the number fails, treat it as 0 to keep a stable, deterministic order.
+            //If parsing the number fails, treat it as 0 to keep a stable, deterministic order.
             int prefix = int.TryParse(parts[0], out var n) ? n : 0;
             return (prefix, parts[1]);
         }
