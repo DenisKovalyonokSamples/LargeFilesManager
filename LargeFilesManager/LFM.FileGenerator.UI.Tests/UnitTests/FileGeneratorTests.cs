@@ -1,8 +1,10 @@
 using LFM.Core;
 using LFM.Core.Enums;
+using LFM.FileGenerator.Services;
 using LFM.FileGenerator.ViewModels;
 using Microsoft.Extensions.Options;
 using Moq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using LFM.Core.Services;
@@ -90,6 +92,99 @@ namespace LFM.FileGenerator.Tests.UnitTests
             // Assert that the service's WriteTextFile was called at least once
             mockGenerator.Verify(s => s.WriteTextFile(vm.FilePath, vm.FileName, vm.FileSize, vm.SelectedFileSizeType, vm.FileTextLineLengthMax), Times.AtLeastOnce);
             Assert.Equal(Visibility.Visible, vm.ProgressBarVisibility);
+        }
+
+        [Fact]
+        public void WriteTextFile_CreatesFinalFile_AndDeletesPartFiles()
+        {
+            // Arrange
+            TestServiceHost.CreateDefaultServiceProvider(); // default settings are fine
+            var service = new FileGeneratorService();
+
+            var tempDir = Path.Combine(Path.GetTempPath(), "gen_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+
+            var fileName = "tiny_output.txt";
+            var cpu = Environment.ProcessorCount;
+            // ensure sizePerFile >= 1 byte for each part
+            long totalBytes = cpu * 8; // bytes
+            int maxLineLen = 4;
+
+            try
+            {
+                // Act
+                service.WriteTextFile(tempDir, fileName, totalBytes, FileSizeType.B, maxLineLen);
+
+                // Assert final file exists
+                var finalPath = Path.Combine(tempDir, fileName);
+                Assert.True(File.Exists(finalPath), "Final merged file was not created.");
+                var length = new FileInfo(finalPath).Length;
+                Assert.True(length >= 1, "Final merged file should not be empty for tiny write.");
+
+                // Assert part files are deleted (if any were created)
+                var fileNameNoExt = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName);
+                var partFiles = Directory.GetFiles(tempDir, $"{fileNameNoExt}.part_*{ext}");
+                Assert.Empty(partFiles);
+            }
+            finally
+            {
+                try
+                {
+                    if (Directory.Exists(tempDir))
+                        Directory.Delete(tempDir, recursive: true);
+                }
+                catch { /* ignore for test cleanup */ }
+            }
+        }
+
+        [Fact]
+        public void WriteTextFile_WithZeroMaxLineLength_WritesNumberOnlyLines()
+        {
+            // Arrange
+            TestServiceHost.CreateDefaultServiceProvider();
+            var service = new FileGeneratorService();
+
+            var tempDir = Path.Combine(Path.GetTempPath(), "gen_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+
+            var fileName = "zero_len_lines.txt";
+            var cpu = Environment.ProcessorCount;
+            long totalBytes = cpu * 8; // bytes so each part writes a minimal line
+            int maxLineLen = 0;
+
+            try
+            {
+                // Act
+                service.WriteTextFile(tempDir, fileName, totalBytes, FileSizeType.B, maxLineLen);
+
+                // Assert
+                var finalPath = Path.Combine(tempDir, fileName);
+                Assert.True(File.Exists(finalPath), "Final merged file was not created.");
+
+                var lines = File.ReadAllLines(finalPath);
+                // allow empty (in case of minimal size/part rounding), else validate format: "<number>. "
+                if (lines.Length > 0)
+                {
+                    var rx = new Regex(@"^\d+\. $");
+                    Assert.All(lines, l => Assert.Matches(rx, l));
+                }
+
+                // no part files remaining
+                var fileNameNoExt = Path.GetFileNameWithoutExtension(fileName);
+                var ext = Path.GetExtension(fileName);
+                var partFiles = Directory.GetFiles(tempDir, $"{fileNameNoExt}.part_*{ext}");
+                Assert.Empty(partFiles);
+            }
+            finally
+            {
+                try
+                {
+                    if (Directory.Exists(tempDir))
+                        Directory.Delete(tempDir, recursive: true);
+                }
+                catch { /* ignore for test cleanup */ }
+            }
         }
     }
 }
