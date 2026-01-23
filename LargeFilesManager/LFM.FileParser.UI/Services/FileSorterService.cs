@@ -10,12 +10,45 @@ using LFM.FileSorter.ViewModels;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
+using System.Linq;
 
 namespace LFM.FileSorter.Services
 {
     public class FileSorterService : BaseService, ITextFileSorterService
     {
         public List<string> PartFileTextPaths { get; set; }
+
+        // Parsed representation of a generator line: "<number>. <words>"
+        private sealed record ParsedLine(int Number, string Words, string Original);
+
+        // Sort by words lexicographically first, then by number ascending
+        private sealed class ParsedLineComparer : IComparer<ParsedLine>
+        {
+            private static readonly StringComparer WordsComparer = StringComparer.Ordinal;
+            public int Compare(ParsedLine? x, ParsedLine? y)
+            {
+                if (ReferenceEquals(x, y)) return 0;
+                if (x is null) return -1;
+                if (y is null) return 1;
+                // First compare by words
+                int byWords = WordsComparer.Compare(x.Words, y.Words);
+                if (byWords != 0) return byWords;
+                // If words equal, compare by number
+                return x.Number.CompareTo(y.Number);
+            }
+        }
+
+        private static bool TryParseLine(string line, out ParsedLine parsed)
+        {
+            parsed = default!;
+            if (string.IsNullOrEmpty(line)) return false;
+            int idx = line.IndexOf(". ");
+            if (idx <= 0) return false;
+            if (!int.TryParse(line.AsSpan(0, idx), out int number)) return false;
+            string words = line.Substring(idx + 2);
+            parsed = new ParsedLine(number, words, line);
+            return true;
+        }
 
         public FileSorterService() : base()
         {
@@ -61,7 +94,9 @@ namespace LFM.FileSorter.Services
             long targetPartFileSizeBytes = ByteHelper.ConvertToBytes(FileSizeType.MB, maxPartFileSizeMegaBytes);
 
             // Determine the bounded capacity for the BlockingCollection.
-            decimal boundedCapacityDecimal = inputFileSizeBytes / targetPartFileSizeBytes;
+            decimal boundedCapacityDecimal = targetPartFileSizeBytes > 0
+                ? (decimal)inputFileSizeBytes / targetPartFileSizeBytes
+                : 1m;
             int boundedCapacity = (int)Math.Round(boundedCapacityDecimal, MidpointRounding.AwayFromZero);
             boundedCapacity = Math.Max(boundedCapacity, 1);
 
@@ -92,7 +127,7 @@ namespace LFM.FileSorter.Services
             }
 
             // Start multiple consumer tasks to write sorted text lines into part files.
-            for (int i = 0; i < totalConsumerTasks; i++)
+            for (int i = 0; i < Math.Max(1, totalConsumerTasks); i++)
             {
                 writerTasks.Add(Task.Run(() =>
                 {
@@ -110,8 +145,8 @@ namespace LFM.FileSorter.Services
                         string partFileIsSortedFormat = string.Format(ServiceManager.StringLocalizer[TranslationConstant.PartFileIsSorted], partFilePath);
                         ProgressStatus = partFileIsSortedFormat;
 
-                        // Write sorted lines to the part file.
-                        File.WriteAllLines(partFilePath, partQueue.Lines);
+                        // Write sorted lines to the part file with explicit UTF-8
+                        File.WriteAllLines(partFilePath, partQueue.Lines, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 
                         // Ensure thread-safe writing to the output file.
                         lock (ProgressLock)
@@ -141,37 +176,35 @@ namespace LFM.FileSorter.Services
             {
                 int partIndex = 0;
                 long currentPartSize = 0;
-                var currentPartLines = new List<string>();
-                var currentPartLinesArray = Array.Empty<string>();
+                var currentPartLines = new List<ParsedLine>();
 
                 string? textLine;
 
                 // Read the input file line by line.
-                using var reader = new StreamReader(inputFileTextPath);
+                using var reader = new StreamReader(inputFileTextPath, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), detectEncodingFromByteOrderMarks: true);
                 while ((textLine = await reader.ReadLineAsync()) != null)
                 {
-                    // Approximate size in bytes.
-                    var textLineSize = Encoding.UTF8.GetByteCount(textLine + Environment.NewLine.Length);
-                    currentPartLines.Add(textLine);
+                    // Accurate size in bytes (content + newline)
+                    int textLineSize = Encoding.UTF8.GetByteCount(textLine) + Encoding.UTF8.GetByteCount(Environment.NewLine);
+                    if (TryParseLine(textLine, out var parsed))
+                    {
+                        currentPartLines.Add(parsed);
+                    }
+                    else
+                    {
+                        // Fallback: treat as number 0 with whole line as words; maintains original
+                        currentPartLines.Add(new ParsedLine(0, textLine, textLine));
+                    }
                     currentPartSize += textLineSize;
 
                     if (currentPartSize >= targetPartFileSizeBytes)
                     {
-                        // Sort the current part lines.
-                        currentPartLinesArray = currentPartLines.ToArray();
-                        Array.Sort(currentPartLinesArray, new TextLineComparer());
+                        // Sort the current part lines by parsed values
+                        currentPartLines.Sort(new ParsedLineComparer());
+                        partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.Original).ToList()));
 
-                        // Add the sorted part to the BlockingCollection.
-                        partQueues.Add(new PartQueue(partIndex, currentPartLinesArray.ToList()));
-
-                        // Reset for the next part and free memory.
+                        // Reset for the next part
                         currentPartLines.Clear();
-                        currentPartLines = null!;
-                        currentPartLines = new List<string>();
-
-                        Array.Clear(currentPartLinesArray, 0, currentPartLinesArray.Length);
-                        currentPartLinesArray = null!;
-                        currentPartLinesArray = Array.Empty<string>();
 
                         currentPartSize = 0;
 
@@ -181,18 +214,9 @@ namespace LFM.FileSorter.Services
 
                 if (currentPartLines.Count > 0)
                 {
-                    // Sort the current part lines.
-                    currentPartLinesArray = currentPartLines.ToArray();
-                    Array.Sort(currentPartLinesArray, new TextLineComparer());
-
-                    partQueues.Add(new PartQueue(partIndex, currentPartLinesArray.ToList()));
-
-                    // Free memory.
+                    currentPartLines.Sort(new ParsedLineComparer());
+                    partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.Original).ToList()));
                     currentPartLines.Clear();
-                    currentPartLines = null!;
-
-                    Array.Clear(currentPartLinesArray, 0, currentPartLinesArray.Length);
-                    currentPartLinesArray = null!;
                 }
                 // Indicate that no more parts will be added.
                 partQueues.CompleteAdding();
@@ -208,68 +232,64 @@ namespace LFM.FileSorter.Services
             ProgressMaxValue = partFileTextPaths.Sum(x => new FileInfo(x).Length);
             ProgressValue = 0;
 
-            var readers = partFileTextPaths.ToDictionary(x => x, x => new StreamReader(x));
-            var comparer = new TextLineComparer();
-            var sortedDictionary = new SortedDictionary<string, List<string>>(comparer);
+            var encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+            var readers = partFileTextPaths.ToDictionary(x => x, x => new StreamReader(x, encoding, detectEncodingFromByteOrderMarks: true));
+            var pq = new SortedDictionary<ParsedLine, Queue<string>>(new ParsedLineComparer());
 
-            // Initialize a sorted dictionary with the first line from each part file.
-            foreach (var reader in readers)
+            // Initialize with first line from each part
+            foreach (var kvp in readers)
             {
-                var line = reader.Value.ReadLine();
-                if (line != null)
+                var line = kvp.Value.ReadLine();
+                if (line != null && TryParseLine(line, out var parsed))
                 {
-                    Add(sortedDictionary, line, reader.Key);
-                }
-            }
-
-            if (!File.Exists(outputFileTextPath))
-            {
-                File.Create(outputFileTextPath).Close();
-            }
-
-            // Write merged lines into the output file.
-            using var writer = new StreamWriter(outputFileTextPath);
-            while (sortedDictionary.Count > 0)
-            {
-                // Get the minimal entry sorted line ordered by the comparer.
-                var minEntry = sortedDictionary.First();
-
-                // Write the minimal entry sorted line into output file.
-                writer.WriteLine(minEntry.Key);
-
-                // Read the next line from the corresponding part file and add it to the sorted dictionary.
-                foreach (var filePath in minEntry.Value)
-                {
-                    var reader = readers[filePath];
-                    var nextLine = reader.ReadLine();
-                    if (nextLine != null)
+                    if (!pq.TryGetValue(parsed, out var q))
                     {
-                        Add(sortedDictionary, nextLine, filePath);
+                        q = new Queue<string>();
+                        pq[parsed] = q;
                     }
-                    ProgressValue += Encoding.UTF8.GetByteCount(nextLine + Environment.NewLine);
+                    q.Enqueue(kvp.Key);
+                }
+            }
+
+            using var writer = new StreamWriter(outputFileTextPath, append: false, encoding);
+            while (pq.Count > 0)
+            {
+                var minEntry = pq.First();
+                var parsedToWrite = minEntry.Key;
+                var filesQueue = minEntry.Value;
+
+                writer.WriteLine(parsedToWrite.Original);
+                int delta = encoding.GetByteCount(parsedToWrite.Original) + encoding.GetByteCount(writer.NewLine);
+                lock (ProgressLock)
+                {
+                    ProgressValue += delta;
                 }
 
-                // Remove the minimal entry sorted line that has already written to the output file.
-                sortedDictionary.Remove(minEntry.Key);
+                var filePath = filesQueue.Dequeue();
+                var reader = readers[filePath];
+                var next = reader.ReadLine();
+
+                if (filesQueue.Count == 0)
+                {
+                    pq.Remove(parsedToWrite);
+                }
+
+                if (next != null)
+                {
+                    var nextParsed = TryParseLine(next, out var pl) ? pl : new ParsedLine(0, next, next);
+                    if (!pq.TryGetValue(nextParsed, out var q))
+                    {
+                        q = new Queue<string>();
+                        pq[nextParsed] = q;
+                    }
+                    q.Enqueue(filePath);
+                }
             }
 
             // Close all readers.
             foreach (var reader in readers.Values)
             {
-                reader.Close();
-            }
-        }
-
-        private void Add(SortedDictionary<string, List<string>> sortedDictionary, string line, string filePath)
-        {
-            if (!sortedDictionary.ContainsKey(line))
-            {
-                sortedDictionary[line] = new List<string>();
-            }
-
-            if (!sortedDictionary[line].Contains(filePath))
-            {
-                sortedDictionary[line].Add(filePath);
+                reader.Dispose();
             }
         }
 
