@@ -198,8 +198,7 @@ namespace LFM.FileGenerator.ViewModels
             if (ServiceLocator.TextFileGeneratorService.IsDispatcherTimerStopped)
             {
                 ProgressBarValue = ProgressBarValueMax;
-                DispatcherTimer.Stop();
-                StopWatch.Stop();
+                ClearProgressPanelState();
 
                 // Reset cursor 
                 Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;

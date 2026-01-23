@@ -156,12 +156,17 @@ namespace LFM.Core.Models
             StopWatch = new Stopwatch();
         }
 
-        public void ResetProgressPanel()
+        public void ClearProgressPanelState()
         {
             //Stop producing updates. Clears elapsed time to 0. Without it, a subsequent Start() would continue from the previous run, and the next tick would show an old elapsed value.
             StopWatch.Reset();
             // Zero elapsed. If itwill not be stopped, it will immediately repopulate the cleared properties (elapsed, values, status) and keep consuming CPU.
             DispatcherTimer.Stop();
+        }
+
+        public void ResetProgressPanel()
+        {
+            ClearProgressPanelState();
 
             ProgressBarVisibility = Visibility.Hidden;
             ProgressBarValueMin = 0;
