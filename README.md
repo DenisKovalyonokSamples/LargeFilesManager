@@ -1,19 +1,19 @@
 # LargeFilesManager
 
 LargeFilesManager consists of two WPF applications and a shared core:
-•	File Generator (LFM.FileGenerator.UI): Creates large text files efficiently.
-•	File Sorter (LFM.FileParser.UI): Sorts very large files deterministically without loading the whole file into memory.
+1.	File Generator (LFM.FileGenerator.UI): Creates large text files efficiently.
+2.	File Sorter (LFM.FileParser.UI): Sorts very large files deterministically without loading the whole file into memory.
 Both apps are designed to process large files with parallelism, streaming I/O, and consistent progress reporting.
 
-•	Core (LFM.Core): Shared services, configuration, logging, localization, helpers, and comparers.
+3.	Core (LFM.Core): Shared services, configuration, logging, localization, helpers, and comparers.
 
 File Format
 
 Lines generated and processed follow the template: <number>. <text>
 Where:
-•	number: an integer prefix.
-•	text: the textual portion of a line.
-•	Sorting semantics: first by text alphabetically (Ordinal), then by number ascending when texts are equal.
+1.	number: an integer prefix.
+2.	text: the textual portion of a line.
+3.	Sorting semantics: first by text alphabetically (Ordinal), then by number ascending when texts are equal.
 
 Example:
 1.	Apple
@@ -26,11 +26,11 @@ File Generator
 
 Purpose: Generates large text files quickly, splitting work across part files and merging them into a single output.
 Key characteristics:
-•	Streaming I/O with FileStream + StreamWriter.
-•	Parallel part generation based on processor count.
-•	Deterministic line structure; words-only generation for text.
-•	Accurate, thread-safe progress tracking.
-•	Explicit UTF-8 (no BOM) encoding for consistency.
+1.	Streaming I/O with FileStream + StreamWriter.
+2.	Parallel part generation based on processor count.
+3.	Deterministic line structure; words-only generation for text.
+4.	Accurate, thread-safe progress tracking.
+5.	Explicit UTF-8 (no BOM) encoding for consistency.
 
 Generation steps:
 
