@@ -2,19 +2,33 @@
 {
     public class TextLineComparer : IComparer<string>
     {
-        public int Compare(string? x, string? y)
+        /// <summary>
+        /// Compares two lines in the format "<number>. <text>".
+        /// Sort by the text part (alphabetically), then by the numeric prefix (ascending) when texts are equal.
+        /// </summary>
+        public int Compare(string? leftLine, string? rightLine)
         {
-            var a = ParseLine(x);
-            var b = ParseLine(y);
+            var left = ParseLine(leftLine);
+            var right = ParseLine(rightLine);
 
-            int stringCompare = string.Compare(a.Item2, b.Item2, StringComparison.Ordinal);
-            return stringCompare != 0 ? stringCompare : a.Item1.CompareTo(b.Item1);
+            int textComparison = string.Compare(left.textPart, right.textPart, StringComparison.Ordinal);
+            if (textComparison != 0) return textComparison;
+
+            return left.numericPrefix.CompareTo(right.numericPrefix);
         }
 
-        private (int, string) ParseLine(string line)
+        private (int numericPrefix, string textPart) ParseLine(string? inputLine)
         {
-            var parts = line.Split(new[] { ". " }, 2, StringSplitOptions.RemoveEmptyEntries);
-            return (int.Parse(parts[0]), parts[1]);
+            if (string.IsNullOrWhiteSpace(inputLine))
+                return (0, string.Empty);
+
+            var parts = inputLine.Split(new[] { ". " }, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length < 2)
+                return (0, inputLine);
+
+            // If parsing the number fails, treat it as 0 to keep a stable, deterministic order.
+            int prefix = int.TryParse(parts[0], out var n) ? n : 0;
+            return (prefix, parts[1]);
         }
     }
 }
