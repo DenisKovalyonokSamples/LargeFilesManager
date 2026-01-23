@@ -129,9 +129,14 @@ Sorting steps:
 -	Compute target part size in bytes using MaxPartFileSizeMegaBytes.
 -	Derive bounded capacity for the internal BlockingCollection<PartQueue> to regulate memory/flow.
 -	Start consumer tasks (writers) based on TotalConsumerTasks.
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterDefaultState.png)
 <br><br>
 
-2.	Producer: read and split
+2.	Information added:
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterInformationFilledState.png)
+<br><br>
+
+4.	Producer: read and split
 -	Open the input file with StreamReader (UTF-8 no BOM).
 -	Read line-by-line, calculating byte size per line (text + newline).
 -	Parse each line to ParsedLine:
@@ -144,17 +149,19 @@ Sorting steps:
 -	If equal, compare by NumericPrefix.
 -	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
 -	Repeat until EOF; flush remaining lines as the last part.
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png) 
 <br><br>
 
-3.	Consumers: write sorted parts
+4.	Consumers: write sorted parts
 -	Each consumer:
 -	Dequeues PartQueue items.
 -	Writes sorted lines to a temporary part file in a unique temp directory.
 -	Updates progress by the resulting part file length.
 -	Records the part file path and clears queue memory.
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
 <br><br>
 
-4.	Merge sorted part files
+5.	Merge sorted part files
 -	Initialize readers for each part (UTF-8 no BOM).
 -	Build a candidate map: SortedDictionary<ParsedLine, Queue<string>> keyed by the next line from each part (parsed).
 -	Queue maintains file paths producing identical parsed lines; this preserves duplicates.
@@ -166,9 +173,17 @@ Sorting steps:
 -	Dequeue the producing file path and read its next line:
 -	If available, reinsert into candidates; otherwise, that path is exhausted.
 -	Dispose readers, report completion, and delete temp part files.
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
 <br><br>
 
-5.	Error handling and logging
+6.	Process completed state
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterCompletedState.png)
+<br><br>
+   
+7. Click "Reset Form" button to start new generation process.
+<br><br>
+
+Error handling and logging
 -	Both split and merge stages update ProgressStatus and ProgressValue.
 -	Exceptions log context and are allowed to propagate to global handlers (App-level safety net).
 <br><br>
