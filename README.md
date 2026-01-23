@@ -2,6 +2,8 @@
 
 LargeFilesManager consists of two WPF applications and a shared core:
 1.	File Generator (LFM.FileGenerator.UI): Creates large text files efficiently.
+![image_alt](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorDefaultState.png)
+
 2.	File Sorter (LFM.FileParser.UI): Sorts very large files deterministically without loading the whole file into memory.
 Both apps are designed to process large files with parallelism, streaming I/O, and consistent progress reporting.
 
