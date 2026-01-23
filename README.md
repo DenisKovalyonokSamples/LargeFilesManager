@@ -61,6 +61,7 @@ Generation steps:
 2.	Information added:
    
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorInformationFilledState.png)
+<br><br>
 
 3.	Parallel part file creation
 -	For i in [0..parallelParts):
@@ -133,10 +134,11 @@ Sorting steps:
 <br><br>
 
 2.	Information added:
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterInformationFilledState.png)
 <br><br>
 
-4.	Producer: read and split
+3.	Producer: read and split
 -	Open the input file with StreamReader (UTF-8 no BOM).
 -	Read line-by-line, calculating byte size per line (text + newline).
 -	Parse each line to ParsedLine:
