@@ -35,131 +35,132 @@ Key characteristics:
 Generation steps:
 
 1.	Initialization
-•	Reset progress panel state: ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
-•	Compute target file size in bytes using ByteHelper.ConvertToBytes(fileSizeType, fileSize).
-•	Determine buffer size from BufferFileWriteSize with a safe minimum (4 KB).
-•	Select degree of parallelism based on ProcessorCount.
-•	Compute sizePerFile = targetSize / parallelParts.
-•	Delete any existing final file and stale part files.
+-	Reset progress panel state: ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
+-	Compute target file size in bytes using ByteHelper.ConvertToBytes(fileSizeType, fileSize).
+-	Determine buffer size from BufferFileWriteSize with a safe minimum (4 KB).
+-	Select degree of parallelism based on ProcessorCount.
+-	Compute sizePerFile = targetSize / parallelParts.
+-	Delete any existing final file and stale part files.
 
 2.	Parallel part file creation
-•	For i in [0..parallelParts):
-•	Compute part file name: <base>.part_{i+1}.<ext> when parallel parts > 1.
-•	Open a write stream: FileStream(partPath, Create) + StreamWriter(UTF8 no BOM).
-•	Loop until part reaches sizePerFile:
-•	Generate [text] using words-only generator:
-•	Build alphabetic words separated by single spaces; total length <= maxLineLength.
-•	Increment the global LineNumber atomically.
-•	Write line with template: "{LineNumber}. {text}".
-•	Update progress by actual bytes written: encoding byte count of line + newline.
-•	If the next similar write would exceed sizePerFile, write one last line to approximate target and exit.
+-	For i in [0..parallelParts):
+-	Compute part file name: <base>.part_{i+1}.<ext> when parallel parts > 1.
+-	Open a write stream: FileStream(partPath, Create) + StreamWriter(UTF8 no BOM).
+-	Loop until part reaches sizePerFile:
+-	Generate [text] using words-only generator:
+-	Build alphabetic words separated by single spaces; total length <= maxLineLength.
+-	Increment the global LineNumber atomically.
+-	Write line with template: "{LineNumber}. {text}".
+-	Update progress by actual bytes written: encoding byte count of line + newline.
+-	If the next similar write would exceed sizePerFile, write one last line to approximate target and exit.
 
 3.	Merge part files into final file
-•	Open the final output stream once.
-•	Read each part file line-by-line in parallel.
-•	Serialize writes to the final writer via a lock.
-•	Update progress using accurate byte counts on each merged line.
-•	Log merge completion, delete part files, and mark process complete.
+-	Open the final output stream once.
+-	Read each part file line-by-line in parallel.
+-	Serialize writes to the final writer via a lock.
+-	Update progress using accurate byte counts on each merged line.
+-	Log merge completion, delete part files, and mark process complete.
 
 4.	Error handling and logging
-•	All major operations (generation, merging, file deletion) log progress and errors using Serilog.
-•	Exceptions during merge do not delete part files, enabling retry.
+-	All major operations (generation, merging, file deletion) log progress and errors using Serilog.
+-	Exceptions during merge do not delete part files, enabling retry.
 
 5.	Encoding and counting
-•	Use UTF-8 without BOM for both writer and reader.
-•	Calculate progress by encoding-aware byte counts (line + newline) to avoid drift.
+-	Use UTF-8 without BOM for both writer and reader.
+-	Calculate progress by encoding-aware byte counts (line + newline) to avoid drift.
 
 
 File Sorter
+
 Purpose: Sorts very large files according to the format’s semantics, using external sorting:
-•	Sort by the text portion alphabetically (Ordinal).
-•	When texts are equal, sort by the numeric prefix ascending.
+-	Sort by the text portion alphabetically (Ordinal).
+-	When texts are equal, sort by the numeric prefix ascending.
 
 Key characteristics:
-•	Split-then-merge pipeline (external sorting).
-•	Streaming I/O, blocking queues, and parallel consumers.
-•	Stable, duplicate-preserving k-way merge.
-•	Accurate, thread-safe progress updates.
-•	Explicit UTF-8 (no BOM) encoding throughout.
+-	Split-then-merge pipeline (external sorting).
+-	Streaming I/O, blocking queues, and parallel consumers.
+-	Stable, duplicate-preserving k-way merge.
+-	Accurate, thread-safe progress updates.
+-	Explicit UTF-8 (no BOM) encoding throughout.
 
 Sorting steps:
 
 1.	Initialization
-•	Reset progress panel state and status.
-•	Inspect input file size for progress tracking.
-•	Compute target part size in bytes using MaxPartFileSizeMegaBytes.
-•	Derive bounded capacity for the internal BlockingCollection<PartQueue> to regulate memory/flow.
-•	Start consumer tasks (writers) based on TotalConsumerTasks.
+-	Reset progress panel state and status.
+-	Inspect input file size for progress tracking.
+-	Compute target part size in bytes using MaxPartFileSizeMegaBytes.
+-	Derive bounded capacity for the internal BlockingCollection<PartQueue> to regulate memory/flow.
+-	Start consumer tasks (writers) based on TotalConsumerTasks.
 
 2.	Producer: read and split
-•	Open the input file with StreamReader (UTF-8 no BOM).
-•	Read line-by-line, calculating byte size per line (text + newline).
-•	Parse each line to ParsedLine:
-•	NumericPrefix: integer portion before . 
-•	Text: substring after . 
-•	OriginalLine: original text line
-•	Accumulate lines until the current part reaches targetPartFileSizeBytes.
-•	Sort the current part in-memory using ParsedLineComparer:
-•	Compare by Text (Ordinal).
-•	If equal, compare by NumericPrefix.
-•	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
-•	Repeat until EOF; flush remaining lines as the last part.
+-	Open the input file with StreamReader (UTF-8 no BOM).
+-	Read line-by-line, calculating byte size per line (text + newline).
+-	Parse each line to ParsedLine:
+-	NumericPrefix: integer portion before . 
+-	Text: substring after . 
+-	OriginalLine: original text line
+-	Accumulate lines until the current part reaches targetPartFileSizeBytes.
+-	Sort the current part in-memory using ParsedLineComparer:
+-	Compare by Text (Ordinal).
+-	If equal, compare by NumericPrefix.
+-	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
+-	Repeat until EOF; flush remaining lines as the last part.
 
 3.	Consumers: write sorted parts
-•	Each consumer:
-•	Dequeues PartQueue items.
-•	Writes sorted lines to a temporary part file in a unique temp directory.
-•	Updates progress by the resulting part file length.
-•	Records the part file path and clears queue memory.
+-	Each consumer:
+-	Dequeues PartQueue items.
+-	Writes sorted lines to a temporary part file in a unique temp directory.
+-	Updates progress by the resulting part file length.
+-	Records the part file path and clears queue memory.
 
 4.	Merge sorted part files
-•	Initialize readers for each part (UTF-8 no BOM).
-•	Build a candidate map: SortedDictionary<ParsedLine, Queue<string>> keyed by the next line from each part (parsed).
-•	Queue maintains file paths producing identical parsed lines; this preserves duplicates.
-•	Open the final output writer (UTF-8 no BOM).
-•	While candidates exist:
-•	Pop the smallest parsed line (Text first, then NumericPrefix).
-•	Write the OriginalLine to output.
-•	Update progress with accurate bytes written.
-•	Dequeue the producing file path and read its next line:
-•	If available, reinsert into candidates; otherwise, that path is exhausted.
-•	Dispose readers, report completion, and delete temp part files.
+-	Initialize readers for each part (UTF-8 no BOM).
+-	Build a candidate map: SortedDictionary<ParsedLine, Queue<string>> keyed by the next line from each part (parsed).
+-	Queue maintains file paths producing identical parsed lines; this preserves duplicates.
+-	Open the final output writer (UTF-8 no BOM).
+-	While candidates exist:
+-	Pop the smallest parsed line (Text first, then NumericPrefix).
+-	Write the OriginalLine to output.
+-	Update progress with accurate bytes written.
+-	Dequeue the producing file path and read its next line:
+-	If available, reinsert into candidates; otherwise, that path is exhausted.
+-	Dispose readers, report completion, and delete temp part files.
 
 5.	Error handling and logging
-•	Both split and merge stages update ProgressStatus and ProgressValue.
-•	Exceptions log context and are allowed to propagate to global handlers (App-level safety net).
+-	Both split and merge stages update ProgressStatus and ProgressValue.
+-	Exceptions log context and are allowed to propagate to global handlers (App-level safety net).
 
 
 Configuration, Logging, and Localization
-•	AppSettings (LFM.Core.AppSettings):
-•	BufferFileWriteSize (KB), TotalConsumerTasks, MaxPartFileSizeMegaBytes, and UI resources.
-•	Logging:
-•	Serilog configured in AppStartupHelper.ConfigureLogging(), with console + file sinks.
-•	Localization:
-•	StringLocalizer provides UI strings and messages.
+-	AppSettings (LFM.Core.AppSettings):
+-	BufferFileWriteSize (KB), TotalConsumerTasks, MaxPartFileSizeMegaBytes, and UI resources.
+-	Logging:
+-	Serilog configured in AppStartupHelper.ConfigureLogging(), with console + file sinks.
+-	Localization:
+-	StringLocalizer provides UI strings and messages.
 
 Progress and UI
-•	BaseService (LFM.Core.Services.BaseService) manages:
-•	ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
-•	Dispatcher timer tick to display elapsed time.
-•	Thread-safe locks for progress and shared counters (e.g., LineNumberLock).
+-	BaseService (LFM.Core.Services.BaseService) manages:
+-	ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
+-	Dispatcher timer tick to display elapsed time.
+-	Thread-safe locks for progress and shared counters (e.g., LineNumberLock).
 
 Best Practices Implemented
-•	Streaming I/O with explicit buffer sizes.
-•	Accurate encoding-aware byte counting for progress.
-•	Deterministic formatting and sorting semantics.
-•	Parallelism used where safe (part generation; part writing; merge reads).
-•	Thread-safe updates via locks around shared state.
-•	Resource cleanup via using and guarded deletes.
-•	Error logging with actionable context; failures avoid destructive cleanup when retry is possible.
+-	Streaming I/O with explicit buffer sizes.
+-	Accurate encoding-aware byte counting for progress.
+-	Deterministic formatting and sorting semantics.
+-	Parallelism used where safe (part generation; part writing; merge reads).
+-	Thread-safe updates via locks around shared state.
+-	Resource cleanup via using and guarded deletes.
+-	Error logging with actionable context; failures avoid destructive cleanup when retry is possible.
 
 Running the Apps
 
 File Generator:
-•	Choose output folder, file name, target size (B/KB/MB/GB), and maxLineLength.
-•	Start generation; progress bar and logs indicate status.
+-	Choose output folder, file name, target size (B/KB/MB/GB).
+-	Start generation; progress bar and logs indicate status.
 
 File Sorter:
-•	Choose input file and output file path.
-•	Start sorting; the app splits, sorts parts, and merges to output.
-•	Final output is sorted by text then number, matching the generator’s semantics.
+-	Choose input file and output file path.
+-	Start sorting; the app splits, sorts parts, and merges to output.
+-	Final output is sorted by text then number, matching the generator’s semantics.
