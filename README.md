@@ -5,7 +5,7 @@ LargeFilesManager consists of two WPF applications and a shared core:
    ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorDefaultState.png)
 
 2.	File Sorter (LFM.FileParser.UI): Sorts very large files deterministically without loading the whole file into memory.
-   ![image_sort_def]([(https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/12cd03ca6ba5396af82ce965bf4be2db0f98dc3e/Screenshots/FileSorterDefaultState.png)](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/0c473ff5edebbf7c49f4779ac6dd69508e4861c7/Screenshots/FileGeneratorDefaultState.png))
+   ![image_sort_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterDefaultState.png)
   	
 Both apps are designed to process large files with parallelism, streaming I/O, and consistent progress reporting.
 
