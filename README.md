@@ -1,6 +1,8 @@
 # LargeFilesManager
 
 LargeFilesManager consists of two WPF applications and a shared core:
+<br><br>
+
 1.	File Generator (LFM.FileGenerator.UI): Creates large text files efficiently.
    
    ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorDefaultState.png)
@@ -9,13 +11,15 @@ LargeFilesManager consists of two WPF applications and a shared core:
 2.	File Sorter (LFM.FileParser.UI): Sorts very large files deterministically without loading the whole file into memory.
    
    ![image_sort_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterDefaultState.png)
-  	
+<br><br>
+
 Both apps are designed to process large files with parallelism, streaming I/O, and consistent progress reporting.
 
 3.	Core (LFM.Core): Shared services, configuration, logging, localization, helpers, and comparers.
-
+<br><br>
 
 File Format
+<br><br>
 
 Lines generated and processed follow the template: <number>. <text>
 
@@ -25,9 +29,10 @@ Example:
 3.	Banana is yellow
 4.	Cherry is the best
 5.	Something something something
-
+<br><br>
 
 File Generator
+<br><br>
 
 Purpose: Generates large text files quickly, splitting work across part files and merging them into a single output.
 
@@ -37,8 +42,10 @@ Key characteristics:
 3.	Deterministic line structure; words-only generation for text.
 4.	Accurate, thread-safe progress tracking.
 5.	Explicit UTF-8 (no BOM) encoding for consistency.
+<br><br>
 
 Generation steps:
+<br><br>
 
 1.	Initialization
 -	Reset progress panel state: ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
@@ -49,6 +56,7 @@ Generation steps:
 -	Delete any existing final file and stale part files.
 
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorDefaultState.png)
+<br><br>
 
 2.	Information added:
    
@@ -67,6 +75,7 @@ Generation steps:
 -	If the next similar write would exceed sizePerFile, write one last line to approximate target and exit.
 
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
+<br><br>
 
 4.	Merge part files into final file
 -	Open the final output stream once.
@@ -76,14 +85,15 @@ Generation steps:
 -	Log merge completion, delete part files, and mark process complete.
 
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorMergingPartsState.png)
+<br><br>
 
-4.	Process completed state
+5.	Process completed state
 
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorCompletedState.png)
+<br><br>
 
-
-5. Click "Reset Form" button to start new generation process.
-
+6. Click "Reset Form" button to start new generation process.
+<br><br>
 
 Error handling and logging
 -	All major operations (generation, merging, file deletion) log progress and errors using Serilog.
@@ -92,13 +102,15 @@ Error handling and logging
 Encoding and counting
 -	Use UTF-8 without BOM for both writer and reader.
 -	Calculate progress by encoding-aware byte counts (line + newline) to avoid drift.
-
+<br><br>
 
 File Sorter
+<br><br>
 
 Purpose: Sorts very large files according to the format’s semantics, using external sorting:
 -	Sort by the text portion alphabetically (Ordinal).
 -	When texts are equal, sort by the numeric prefix ascending.
+<br><br>
 
 Key characteristics:
 -	Split-then-merge pipeline (external sorting).
@@ -106,8 +118,10 @@ Key characteristics:
 -	Stable, duplicate-preserving k-way merge.
 -	Accurate, thread-safe progress updates.
 -	Explicit UTF-8 (no BOM) encoding throughout.
+<br><br>
 
 Sorting steps:
+<br><br>
 
 1.	Initialization
 -	Reset progress panel state and status.
@@ -115,6 +129,7 @@ Sorting steps:
 -	Compute target part size in bytes using MaxPartFileSizeMegaBytes.
 -	Derive bounded capacity for the internal BlockingCollection<PartQueue> to regulate memory/flow.
 -	Start consumer tasks (writers) based on TotalConsumerTasks.
+<br><br>
 
 2.	Producer: read and split
 -	Open the input file with StreamReader (UTF-8 no BOM).
@@ -129,6 +144,7 @@ Sorting steps:
 -	If equal, compare by NumericPrefix.
 -	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
 -	Repeat until EOF; flush remaining lines as the last part.
+<br><br>
 
 3.	Consumers: write sorted parts
 -	Each consumer:
@@ -136,6 +152,7 @@ Sorting steps:
 -	Writes sorted lines to a temporary part file in a unique temp directory.
 -	Updates progress by the resulting part file length.
 -	Records the part file path and clears queue memory.
+<br><br>
 
 4.	Merge sorted part files
 -	Initialize readers for each part (UTF-8 no BOM).
@@ -149,11 +166,12 @@ Sorting steps:
 -	Dequeue the producing file path and read its next line:
 -	If available, reinsert into candidates; otherwise, that path is exhausted.
 -	Dispose readers, report completion, and delete temp part files.
+<br><br>
 
 5.	Error handling and logging
 -	Both split and merge stages update ProgressStatus and ProgressValue.
 -	Exceptions log context and are allowed to propagate to global handlers (App-level safety net).
-
+<br><br>
 
 Configuration, Logging, and Localization
 -	AppSettings (LFM.Core.AppSettings):
@@ -162,12 +180,14 @@ Configuration, Logging, and Localization
 -	Serilog configured in AppStartupHelper.ConfigureLogging(), with console + file sinks.
 -	Localization:
 -	StringLocalizer provides UI strings and messages.
+<br><br>
 
 Progress and UI
 -	BaseService (LFM.Core.Services.BaseService) manages:
 -	ProgressMinValue, ProgressMaxValue, ProgressValue, ProgressStatus.
 -	Dispatcher timer tick to display elapsed time.
 -	Thread-safe locks for progress and shared counters (e.g., LineNumberLock).
+<br><br>
 
 Best Practices Implemented
 -	Streaming I/O with explicit buffer sizes.
@@ -177,12 +197,15 @@ Best Practices Implemented
 -	Thread-safe updates via locks around shared state.
 -	Resource cleanup via using and guarded deletes.
 -	Error logging with actionable context; failures avoid destructive cleanup when retry is possible.
+<br><br>
 
 Running the Apps
+<br><br>
 
 File Generator:
 -	Choose output folder, file name, target size (B/KB/MB/GB).
 -	Start generation; progress bar and logs indicate status.
+<br><br>
 
 File Sorter:
 -	Choose input file and output file path.
