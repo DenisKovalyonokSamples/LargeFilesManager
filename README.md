@@ -130,6 +130,7 @@ Sorting steps:
 -	Compute target part size in bytes using MaxPartFileSizeMegaBytes.
 -	Derive bounded capacity for the internal BlockingCollection<PartQueue> to regulate memory/flow.
 -	Start consumer tasks (writers) based on TotalConsumerTasks.
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterDefaultState.png)
 <br><br>
 
@@ -151,6 +152,7 @@ Sorting steps:
 -	If equal, compare by NumericPrefix.
 -	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
 -	Repeat until EOF; flush remaining lines as the last part.
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png) 
 <br><br>
 
@@ -160,6 +162,7 @@ Sorting steps:
 -	Writes sorted lines to a temporary part file in a unique temp directory.
 -	Updates progress by the resulting part file length.
 -	Records the part file path and clears queue memory.
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
 <br><br>
 
@@ -175,10 +178,12 @@ Sorting steps:
 -	Dequeue the producing file path and read its next line:
 -	If available, reinsert into candidates; otherwise, that path is exhausted.
 -	Dispose readers, report completion, and delete temp part files.
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
 <br><br>
 
 6.	Process completed state
+
 ![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterCompletedState.png)
 <br><br>
    
