@@ -1,5 +1,4 @@
 ﻿using LFM.Core;
-using LFM.Core.Comparers;
 using LFM.Core.Constants;
 using LFM.Core.Enums;
 using LFM.Core.Helpers;
@@ -10,7 +9,6 @@ using LFM.FileSorter.ViewModels;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
-using System.Linq;
 
 namespace LFM.FileSorter.Services
 {
@@ -18,35 +16,25 @@ namespace LFM.FileSorter.Services
     {
         public List<string> PartFileTextPaths { get; set; }
 
-        // Parsed representation of a generator line: "<number>. <words>"
-        private sealed record ParsedLine(int Number, string Words, string Original);
+        //Parsed representation of a generator line: "<number>. <string>"
+        //For a positional record, PascalCase here is correct because those identifiers become properties. Using camelCase would produce camelCase property names, which violates .NET property naming.
+        private sealed record ParsedLine(int NumericPrefix, string Text, string OriginalLine);        
 
-        // Sort by words lexicographically first, then by number ascending
-        private sealed class ParsedLineComparer : IComparer<ParsedLine>
+        private static bool TryParseLine(string inputLine, out ParsedLine result)
         {
-            private static readonly StringComparer WordsComparer = StringComparer.Ordinal;
-            public int Compare(ParsedLine? x, ParsedLine? y)
-            {
-                if (ReferenceEquals(x, y)) return 0;
-                if (x is null) return -1;
-                if (y is null) return 1;
-                // First compare by words
-                int byWords = WordsComparer.Compare(x.Words, y.Words);
-                if (byWords != 0) return byWords;
-                // If words equal, compare by number
-                return x.Number.CompareTo(y.Number);
-            }
-        }
+            result = default!;
+            if (string.IsNullOrWhiteSpace(inputLine)) return false;
 
-        private static bool TryParseLine(string line, out ParsedLine parsed)
-        {
-            parsed = default!;
-            if (string.IsNullOrEmpty(line)) return false;
-            int idx = line.IndexOf(". ");
-            if (idx <= 0) return false;
-            if (!int.TryParse(line.AsSpan(0, idx), out int number)) return false;
-            string words = line.Substring(idx + 2);
-            parsed = new ParsedLine(number, words, line);
+            int separatorIndex = inputLine.IndexOf(". ");
+            if (separatorIndex <= 0) return false;
+
+            // Parse the numeric prefix before ". "
+            if (!int.TryParse(inputLine.AsSpan(0, separatorIndex), out int numericPrefix)) return false;
+
+            // Extract the text part after ". "
+            string textPart = inputLine.Substring(separatorIndex + 2);
+
+            result = new ParsedLine(numericPrefix, textPart, inputLine);
             return true;
         }
 
@@ -201,7 +189,7 @@ namespace LFM.FileSorter.Services
                     {
                         // Sort the current part lines by parsed values
                         currentPartLines.Sort(new ParsedLineComparer());
-                        partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.Original).ToList()));
+                        partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.OriginalLine).ToList()));
 
                         // Reset for the next part
                         currentPartLines.Clear();
@@ -215,7 +203,7 @@ namespace LFM.FileSorter.Services
                 if (currentPartLines.Count > 0)
                 {
                     currentPartLines.Sort(new ParsedLineComparer());
-                    partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.Original).ToList()));
+                    partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.OriginalLine).ToList()));
                     currentPartLines.Clear();
                 }
                 // Indicate that no more parts will be added.
@@ -223,71 +211,74 @@ namespace LFM.FileSorter.Services
             });
         }
 
-        private void MergeSortedPartFiles(List<string> partFileTextPaths, string outputFileTextPath)
+        private void MergeSortedPartFiles(List<string> sortedPartFilePaths, string outputFilePath)
         {
-            // Implementation for merging sorted part files into a single output file
-            // This can be done using a priority queue (min-heap) to efficiently merge the sorted files.
-            ProgressStatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergingSortedPartFileInto], partFileTextPaths.Count, outputFileTextPath);
+            // Merge sorted part files into one output file using a min-heap-like structure
+            ProgressStatus = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergingSortedPartFileInto], sortedPartFilePaths.Count, outputFilePath);
             ProgressMinValue = 0;
-            ProgressMaxValue = partFileTextPaths.Sum(x => new FileInfo(x).Length);
+            ProgressMaxValue = sortedPartFilePaths.Sum(x => new FileInfo(x).Length);
             ProgressValue = 0;
 
-            var encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
-            var readers = partFileTextPaths.ToDictionary(x => x, x => new StreamReader(x, encoding, detectEncodingFromByteOrderMarks: true));
-            var pq = new SortedDictionary<ParsedLine, Queue<string>>(new ParsedLineComparer());
+            var utf8NoBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+            var readersByPath = sortedPartFilePaths.ToDictionary(p => p, p => new StreamReader(p, utf8NoBom, detectEncodingFromByteOrderMarks: true));
 
-            // Initialize with first line from each part
-            foreach (var kvp in readers)
+            // Key = next line (parsed), Value = queue of part-file paths that currently yield that same line (preserves duplicates)
+            var candidatesByLine = new SortedDictionary<ParsedLine, Queue<string>>(new ParsedLineComparer());
+
+            // Prime the candidates with the first line of each part file
+            foreach (var entry in readersByPath)
             {
-                var line = kvp.Value.ReadLine();
-                if (line != null && TryParseLine(line, out var parsed))
+                var firstLineText = entry.Value.ReadLine();
+                if (firstLineText != null && TryParseLine(firstLineText, out var firstParsedLine))
                 {
-                    if (!pq.TryGetValue(parsed, out var q))
+                    if (!candidatesByLine.TryGetValue(firstParsedLine, out var pathsQueue))
                     {
-                        q = new Queue<string>();
-                        pq[parsed] = q;
+                        pathsQueue = new Queue<string>();
+                        candidatesByLine[firstParsedLine] = pathsQueue;
                     }
-                    q.Enqueue(kvp.Key);
+                    pathsQueue.Enqueue(entry.Key);
                 }
             }
 
-            using var writer = new StreamWriter(outputFileTextPath, append: false, encoding);
-            while (pq.Count > 0)
-            {
-                var minEntry = pq.First();
-                var parsedToWrite = minEntry.Key;
-                var filesQueue = minEntry.Value;
+            using var outputWriter = new StreamWriter(outputFilePath, append: false, utf8NoBom);
 
-                writer.WriteLine(parsedToWrite.Original);
-                int delta = encoding.GetByteCount(parsedToWrite.Original) + encoding.GetByteCount(writer.NewLine);
+            while (candidatesByLine.Count > 0)
+            {
+                var smallestEntry = candidatesByLine.First();
+                var currentLine = smallestEntry.Key;
+                var pendingSources = smallestEntry.Value;
+
+                // Write current smallest line
+                outputWriter.WriteLine(currentLine.OriginalLine);
+                int bytesWritten = utf8NoBom.GetByteCount(currentLine.OriginalLine) + utf8NoBom.GetByteCount(outputWriter.NewLine);
                 lock (ProgressLock)
                 {
-                    ProgressValue += delta;
+                    ProgressValue += bytesWritten;
                 }
 
-                var filePath = filesQueue.Dequeue();
-                var reader = readers[filePath];
-                var next = reader.ReadLine();
+                // Advance the source that produced this occurrence
+                var sourcePath = pendingSources.Dequeue();
+                var sourceReader = readersByPath[sourcePath];
+                var nextLineText = sourceReader.ReadLine();
 
-                if (filesQueue.Count == 0)
+                if (pendingSources.Count == 0)
                 {
-                    pq.Remove(parsedToWrite);
+                    candidatesByLine.Remove(currentLine);
                 }
 
-                if (next != null)
+                if (nextLineText != null)
                 {
-                    var nextParsed = TryParseLine(next, out var pl) ? pl : new ParsedLine(0, next, next);
-                    if (!pq.TryGetValue(nextParsed, out var q))
+                    var nextParsedLine = TryParseLine(nextLineText, out var parsed) ? parsed : new ParsedLine(0, nextLineText, nextLineText);
+                    if (!candidatesByLine.TryGetValue(nextParsedLine, out var pathsQueue))
                     {
-                        q = new Queue<string>();
-                        pq[nextParsed] = q;
+                        pathsQueue = new Queue<string>();
+                        candidatesByLine[nextParsedLine] = pathsQueue;
                     }
-                    q.Enqueue(filePath);
+                    pathsQueue.Enqueue(sourcePath);
                 }
             }
 
-            // Close all readers.
-            foreach (var reader in readers.Values)
+            foreach (var reader in readersByPath.Values)
             {
                 reader.Dispose();
             }
@@ -303,5 +294,32 @@ namespace LFM.FileSorter.Services
                 }
             }
         }
+
+        #region Private Classes
+
+        // Sort by words lexicographically first, then by number ascending
+        private sealed class ParsedLineComparer : IComparer<ParsedLine>
+        {
+            private static readonly StringComparer WordsComparer = StringComparer.Ordinal;
+            
+            /// <summary>
+            /// Compares two lines by Text (alphabetically) then by NumericPrefix (ascending).
+            /// </summary>
+            public int Compare(ParsedLine? left, ParsedLine? right)
+            {
+                if (ReferenceEquals(left, right)) return 0;
+                if (left is null) return -1;
+                if (right is null) return 1;
+
+                // First compare by words
+                int wordsComparison = WordsComparer.Compare(left.Text, right.Text);
+                if (wordsComparison != 0) return wordsComparison;
+
+                // If words equal, compare by number
+                return left.NumericPrefix.CompareTo(right.NumericPrefix);
+            }
+        }
+
+        #endregion
     }
 }
