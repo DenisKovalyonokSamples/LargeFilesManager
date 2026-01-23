@@ -180,7 +180,7 @@ namespace LFM.FileSorter.ViewModels
         {
             // Set wait cursor
             Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-            // Reset UI and service state BEFORE starting a new run
+            // Reset UI and service state before starting a new run
             ResetProgressPanel();
             ServiceLocator.TextFileSorterService.ResetProgressPanelState();
 

@@ -2,6 +2,7 @@
 using LFM.Core.Helpers;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
@@ -13,7 +14,7 @@ namespace LFM.Core.Models
     {
         #region Commands
 
-        public ICommand ResetFormCommand { get; set; }
+        public ICommand? ResetFormCommand { get; set; }
 
         #endregion
 
@@ -25,17 +26,19 @@ namespace LFM.Core.Models
             get => _progressBarVisibility;
             set
             {
+                if (_progressBarVisibility == value) return;
                 _progressBarVisibility = value;
                 OnPropertyChanged();
             }
         }
 
-        private int _progressBarValueMin;
-        public int ProgressBarValueMin
+        private long _progressBarValueMin;
+        public long ProgressBarValueMin
         {
             get => _progressBarValueMin;
             set
             {
+                if (_progressBarValueMin == value) return;
                 _progressBarValueMin = value;
                 OnPropertyChanged();
             }
@@ -47,8 +50,11 @@ namespace LFM.Core.Models
             get => _progressBarValueMax;
             set
             {
+                if (_progressBarValueMax == value) return;
                 _progressBarValueMax = value;
                 OnPropertyChanged();
+                // Recalculate string when max changes
+                ProgressBarValueString = GetProgressBarValueString(SelectFileSizeUnit(_progressBarValue), _progressBarValueMax, _progressBarValue);
             }
         }
 
@@ -58,60 +64,52 @@ namespace LFM.Core.Models
             get => _progressBarValue;
             set
             {
-                _progressBarValue = value;
+                // Clamp to [Min, Max]
+                var clamped = value;
+                if (clamped < _progressBarValueMin) clamped = _progressBarValueMin;
+                if (_progressBarValueMax > _progressBarValueMin && clamped > _progressBarValueMax) clamped = _progressBarValueMax;
+
+                if (_progressBarValue == clamped) return;
+
+                _progressBarValue = clamped;
                 OnPropertyChanged();
 
-                long kb = ByteHelper.ConvertToBytes(FileSizeType.KB, 1);
-                long mb = ByteHelper.ConvertToBytes(FileSizeType.MB, 1);
-                long gb = ByteHelper.ConvertToBytes(FileSizeType.GB, 1);
-
-                FileSizeType fileSizeType = FileSizeType.B;
-
-                if (value >= gb)
-                {
-                    fileSizeType = FileSizeType.GB;
-                }
-                else if (value >= mb)
-                {
-                    fileSizeType = FileSizeType.MB;
-                }
-                else if (value >= kb)
-                {
-                    fileSizeType = FileSizeType.KB;
-                }
-
-                ProgressBarValueString = GetProgressBarValueString(fileSizeType, _progressBarValueMax, value);
+                var unit = SelectFileSizeUnit(_progressBarValue);
+                ProgressBarValueString = GetProgressBarValueString(unit, _progressBarValueMax, _progressBarValue);
             }
         }
 
-        private string _progressBarStatus;
+        private string _progressBarStatus = string.Empty;
         public string ProgressBarStatus
         {
             get => _progressBarStatus;
             set
             {
+                if (_progressBarStatus == value) return;
                 _progressBarStatus = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _progressBarValueString;
+        private string _progressBarValueString = string.Empty;
         public string ProgressBarValueString
         {
             get => _progressBarValueString;
             set
             {
+                if (_progressBarValueString == value) return;
                 _progressBarValueString = value;
                 OnPropertyChanged();
             }
         }
 
-        private string _progressBarElapsed;
+        private string _progressBarElapsed = string.Empty;
         public string ProgressBarElapsed
         {
             get => _progressBarElapsed;
             set
             {
+                if (_progressBarElapsed == value) return;
                 _progressBarElapsed = value;
                 OnPropertyChanged();
             }
@@ -123,6 +121,7 @@ namespace LFM.Core.Models
             get => _isResetProcessButtonEnabled;
             set
             {
+                if (_isResetProcessButtonEnabled == value) return;
                 _isResetProcessButtonEnabled = value;
                 OnPropertyChanged();
             }
@@ -131,31 +130,47 @@ namespace LFM.Core.Models
         protected DispatcherTimer DispatcherTimer { get; set; }
         protected Stopwatch StopWatch { get; set; }
 
-        #endregion
-
         public event PropertyChangedEventHandler? PropertyChanged;
+        // Cached byte units to avoid recomputation (repeated ByteHelper calls).
+        private static readonly long BytesKB = ByteHelper.ConvertToBytes(FileSizeType.KB, 1);
+        private static readonly long BytesMB = ByteHelper.ConvertToBytes(FileSizeType.MB, 1);
+        private static readonly long BytesGB = ByteHelper.ConvertToBytes(FileSizeType.GB, 1);
+
+        #endregion
 
         public BaseViewModel()
         {
             ProgressBarVisibility = Visibility.Hidden;
 
-            _progressBarStatus = string.Empty;
-            _progressBarValueString = string.Empty;
-            _progressBarElapsed = string.Empty;
-
             ProgressBarValueMin = 0;
             ProgressBarValueMax = 100;
             ProgressBarValue = 0;
 
-            DispatcherTimer = new DispatcherTimer()
+            DispatcherTimer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(100)
             };
 
             DispatcherTimer.Tick += Timer_Click;
+
             StopWatch = new Stopwatch();
         }
 
+        public void StartProgressPanel()
+        {
+            // Make visible, reset and start timing
+            ProgressBarVisibility = Visibility.Visible;
+            StopWatch.Restart();
+            DispatcherTimer.Start();
+        }
+
+        public void StopProgressPanel()
+        {
+            StopWatch.Stop();
+            DispatcherTimer.Stop();
+        }
+
+        // Stop producing updates and clear elapsed time to 0.
         public void ClearProgressPanelState()
         {
             //Stop producing updates. Clears elapsed time to 0. Without it, a subsequent Start() would continue from the previous run, and the next tick would show an old elapsed value.
@@ -177,31 +192,69 @@ namespace LFM.Core.Models
             ProgressBarElapsed = string.Empty;
         }
 
-        private string GetProgressBarValueString(FileSizeType fileSizeType, decimal maxValue, decimal value)
+        private static FileSizeType SelectFileSizeUnit(long value)
         {
-            long bytes = ByteHelper.ConvertToBytes(fileSizeType, 1);
+            if (value >= BytesGB) return FileSizeType.GB;
+            if (value >= BytesMB) return FileSizeType.MB;
+            if (value >= BytesKB) return FileSizeType.KB;
+            return FileSizeType.B;
+        }
 
-            decimal valueByteMeasure = value / bytes;
-            valueByteMeasure = Math.Round(valueByteMeasure, 2, MidpointRounding.ToEven);
-
-            decimal maxValueByteMeasure = maxValue / bytes;
-            maxValueByteMeasure = Math.Round(maxValueByteMeasure, 2, MidpointRounding.ToEven);
-
-            if (valueByteMeasure == 0)
+        private string GetProgressBarValueString(FileSizeType fileSizeType, long maxValue, long value)
+        {
+            // Handle undefined max explicitly
+            if (maxValue <= 0)
             {
-                return string.Empty;
+                if (value <= 0) return string.Empty;
+                // Show only current value when max is unknown/zero
+                return $"{FormatValue(fileSizeType, value)} {fileSizeType}";
             }
-            else
+
+            var current = FormatValue(fileSizeType, value);
+            var max = FormatValue(fileSizeType, maxValue);
+
+            if (current == "0") return string.Empty;
+
+            return $"{current} {fileSizeType} / {max} {fileSizeType}";
+        }
+
+        private static string FormatValue(FileSizeType fileSizeType, long bytesValue)
+        {
+            long unitBytes = fileSizeType switch
             {
-                return $"{valueByteMeasure} {fileSizeType.ToString()} / {maxValueByteMeasure} {fileSizeType.ToString()}";
-            }
+                FileSizeType.GB => BytesGB,
+                FileSizeType.MB => BytesMB,
+                FileSizeType.KB => BytesKB,
+                _ => 1
+            };
+
+            decimal measured = unitBytes == 0 ? 0 : (decimal)bytesValue / unitBytes;
+            measured = Math.Round(measured, 2, MidpointRounding.ToEven);
+
+            // Use invariant culture to avoid locale-dependent decimal separators
+            return measured.ToString(CultureInfo.InvariantCulture);
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        {
+            // If raised from background threads, consider marshaling to UI Dispatcher.
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
 
         protected virtual void Timer_Click(object? sender, EventArgs e)
         {
+            // Default behavior: update elapsed text
+            if (StopWatch.IsRunning)
+            {
+                var elapsed = StopWatch.Elapsed;
+                ProgressBarElapsed = $"{elapsed:hh\\:mm\\:ss}";
+            }
+        }
+
+        // Optional: call in derived VM or when disposing view
+        protected void DetachTimer()
+        {
+            DispatcherTimer.Tick -= Timer_Click;
         }
     }
 }
