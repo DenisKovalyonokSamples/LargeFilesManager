@@ -14,6 +14,12 @@ namespace LFM.FileGenerator.Services
     {
         private object MergeFilePartWriterLock { get; set; }
 
+        // Cache allowed chars once: letters only
+        private static readonly char[] AllowedChars =
+            Enumerable.Range('A', 26).Select(x => (char)x)
+            .Concat(Enumerable.Range('a', 26).Select(x => (char)x))
+            .ToArray();
+
         public FileGeneratorService() : base()
         {
             MergeFilePartWriterLock = new object();
@@ -24,7 +30,8 @@ namespace LFM.FileGenerator.Services
             // Ensure clean state at entry.
             ResetProgressPanelState();
 
-            int bufferSize = AppSettings.BufferFileWriteSize * 1024; // number KB buffer size
+            // Ensure a sane minimum buffer (4KB)
+            int bufferSize = Math.Max(4096, AppSettings.BufferFileWriteSize * 1024);
             int numberOfFilesToWriteInParallel = Math.Max(1, ProcessorCount);
 
             long targetFileSizeInBytes = ByteHelper.ConvertToBytes(fileSizeType, fileSize);
@@ -42,7 +49,6 @@ namespace LFM.FileGenerator.Services
             var filePathsToDelete = filePartPaths.ToList();
             filePathsToDelete.Add(fulllFileNamePath);
 
-            // Delete final file if it already exists.
             DeleteFile(filePathsToDelete);
 
             var parallelWrittenFileParts = Parallel.For(0, numberOfFilesToWriteInParallel, new ParallelOptions { MaxDegreeOfParallelism = ProcessorCount }, i =>
@@ -78,51 +84,34 @@ namespace LFM.FileGenerator.Services
             string writeToFilePartFormat = string.Format(ServiceManager.StringLocalizer[TranslationConstant.WriteToFilePart], partFilePath, sizePerFile);
             Log.Information(writeToFilePartFormat);
 
-            var random = new Random();
             long totalBytesWritten = 0;
-            int textLineLength = 0;
 
-            string randomText = string.Empty;
-            string textLine = string.Empty;
-            int bytesPerLine = 0;
-
-            // FileStream and StreamWriter are used to avoid loading everything into memory.
-            using (var stream = new FileStream(partFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-            using (var writer = new StreamWriter(stream, Encoding.UTF8, bufferSize))
+            using (var stream = new FileStream(partFilePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize))
+            using (var writer = new StreamWriter(stream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), bufferSize))
             {
                 while (totalBytesWritten < sizePerFile)
                 {
-                    textLineLength = random.Next(1, maxLineLength + 1);
+                    // Generate only alphabetic words separated by spaces; total <= maxLineLength
+                    string randomWords = GenerateRandomWordsLine(maxLineLength);
 
-                    // A chance to generate a new random text line or reuse the previous one
-                    randomText = GenerateRandomStringLine(textLineLength);
-
-                    // Ensure thread-safe incrementing of LineNumber.
                     lock (LineNumberLock)
                     {
                         LineNumber++;
                     }
 
-                    bytesPerLine = WriteLine(writer, randomText);
+                    int bytesPerLine = WriteLine(writer, randomWords);
                     totalBytesWritten += bytesPerLine;
 
-                    // Ensure thread-safe updating of ProgressValue.
                     lock (ProgressLock)
                     {
                         ProgressValue += bytesPerLine;
                     }
 
-                    /* Check if adding another line would exceed the target size.
-                     * If so, write one last line and exit the loop.
-                     * This ensures we do not exceed the target file size significantly.
-                     * Each part file will have the last 2 lines duplicated.
-                    */
-                    if ((totalBytesWritten + bytesPerLine) >= sizePerFile)
+                    // If next line would exceed target, write one more of same to approximate size and exit loop
+                    if (totalBytesWritten + bytesPerLine >= sizePerFile)
                     {
-                        bytesPerLine = WriteLine(writer, randomText);
+                        bytesPerLine = WriteLine(writer, randomWords);
                         totalBytesWritten += bytesPerLine;
-
-                        // Ensure thread-safe updating of ProgressValue.
                         lock (ProgressLock)
                         {
                             ProgressValue += bytesPerLine;
@@ -132,29 +121,54 @@ namespace LFM.FileGenerator.Services
             }
         }
 
-        private int WriteLine(StreamWriter writer, string randomText)
+        private int WriteLine(StreamWriter writer, string words)
         {
-            string textLine = $"{LineNumber}. {randomText}";
-
+            string textLine = $"{LineNumber}. {words}";
             writer.WriteLine(textLine);
-            return Encoding.UTF8.GetByteCount(textLine) + Environment.NewLine.Length;
+
+            // Accurate byte count: content + newline per encoding
+            return writer.Encoding.GetByteCount(textLine) + writer.Encoding.GetByteCount(writer.NewLine);
         }
 
-        private string GenerateRandomStringLine(int length)
+        // Generates a line comprised solely of alphabetic words separated by single spaces
+        // The total character count of the [words] part is <= maxLineLength
+        private string GenerateRandomWordsLine(int maxLineLength)
         {
-            var lowerCaseChars = Enumerable.Range('a', 26).Select(x => (char)x);
-            var upperCaseChars = Enumerable.Range('A', 26).Select(x => (char)x);
+            if (maxLineLength <= 0) return string.Empty;
 
-            string allChars = new string(upperCaseChars.Concat(lowerCaseChars).ToArray());
+            var sb = new StringBuilder(maxLineLength);
+            int remaining = maxLineLength;
 
-            var random = new Random();
-
-            var stringBuilder = new StringBuilder(length);
-            for (int i = 0; i < length; i++)
+            // Choose 1..N words, fitting within maxLineLength; word length 1..12
+            // Stop when adding another word + optional space would exceed limit
+            bool first = true;
+            while (remaining > 0)
             {
-                stringBuilder.Append(allChars[random.Next(allChars.Length)]);
+                int maxWordLen = Math.Min(12, remaining);
+                if (maxWordLen <= 0) break;
+
+                int wordLen = Random.Shared.Next(1, Math.Max(2, maxWordLen + 1)); // [1..maxWordLen]
+                if (!first)
+                {
+                    // Need one char for the space separator
+                    if (remaining < (wordLen + 1)) break;
+                    sb.Append(' ');
+                    remaining--;
+                }
+
+                // Append a word of letters only
+                for (int i = 0; i < wordLen; i++)
+                {
+                    sb.Append(AllowedChars[Random.Shared.Next(AllowedChars.Length)]);
+                }
+                remaining -= wordLen;
+                first = false;
+
+                // Occasionally stop early to vary word count
+                if (remaining <= 2 || Random.Shared.Next(0, 5) == 0) break;
             }
-            return stringBuilder.ToString();
+
+            return sb.ToString();
         }
 
         private void MergeFileParts(string[] filePartPaths, string filePath, string fileName, int bufferSize)
@@ -166,7 +180,7 @@ namespace LFM.FileGenerator.Services
             ProgressMinValue = 0;
 
             var outputStream = new FileStream(fulllFileNamePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize);
-            var writer = new StreamWriter(outputStream);
+            var writer = new StreamWriter(outputStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), bufferSize);
 
             var mergedFilePartParallelResult = Parallel.For(0, filePartPaths.Length, new ParallelOptions { MaxDegreeOfParallelism = ProcessorCount }, (i) =>
             {
@@ -174,22 +188,23 @@ namespace LFM.FileGenerator.Services
                 Log.Information(mergeFilePartFormat);
 
                 using (var inputStream = new FileStream(filePartPaths[i], FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize))
-                using (var reader = new StreamReader(inputStream))
+                using (var reader = new StreamReader(inputStream, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), detectEncodingFromByteOrderMarks: true, bufferSize: bufferSize))
                 {
                     while (!reader.EndOfStream)
                     {
-                        string line = reader.ReadLine();
+                        string? line = reader.ReadLine();
+                        if (line == null) break;
 
                         // Ensure thread-safe writing to the output file.
                         lock (MergeFilePartWriterLock)
                         {
                             writer.WriteLine(line);
-                            ProgressValue += Encoding.UTF8.GetByteCount(line + Environment.NewLine);
+                            // Accurate byte count for progress
+                            ProgressValue += writer.Encoding.GetByteCount(line) + writer.Encoding.GetByteCount(writer.NewLine);
                         }
                     }
                 }
             });
-
             // Wait for all parts to be merged.
             if (mergedFilePartParallelResult.IsCompleted)
             {
@@ -198,7 +213,6 @@ namespace LFM.FileGenerator.Services
 
                 string mergingCompletedFinalFileCreatedFormat = string.Format(ServiceManager.StringLocalizer[TranslationConstant.MergingCompletedFinalFileCreated], fulllFileNamePath);
                 Log.Information(mergingCompletedFinalFileCreatedFormat);
-
                 // Delete part file after merging.
                 DeleteFile(filePartPaths.ToList());
 
