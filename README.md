@@ -153,7 +153,7 @@ Sorting steps:
 -	Add the sorted lines (OriginalLine) to the blocking collection as a PartQueue.
 -	Repeat until EOF; flush remaining lines as the last part.
 
-![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png) 
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterSplitState.png) 
 <br><br>
 
 4.	Consumers: write sorted parts
@@ -163,7 +163,7 @@ Sorting steps:
 -	Updates progress by the resulting part file length.
 -	Records the part file path and clears queue memory.
 
-![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterSortingState.png)
 <br><br>
 
 5.	Merge sorted part files
@@ -179,7 +179,7 @@ Sorting steps:
 -	If available, reinsert into candidates; otherwise, that path is exhausted.
 -	Dispose readers, report completion, and delete temp part files.
 
-![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileGeneratorWritingPartsState.png)
+![image_generate_def](https://github.com/DenisKovalyonokSamples/LargeFilesManager/blob/main/Screenshots/FileSorterMergeState.png)
 <br><br>
 
 6.	Process completed state
