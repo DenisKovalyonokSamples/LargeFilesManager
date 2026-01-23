@@ -10,7 +10,7 @@
         ResizeMode="NoResize"
         WindowState="Normal"
         mc:Ignorable="d"
-        Title="File Sorter" Height="340" Width="800"
+        Title="{i18n:StringLocalizer 'FileSorter'}" Height="340" Width="800"
              Style="{StaticResource CustomWindowStyle}">
     <Window.Resources>
         <DropShadowBitmapEffect x:Key="NormalShadow" ShadowDepth="2" Softness="0.2" Opacity="0.64"/>
@@ -22,7 +22,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical">
-            <GroupBox x:Name="groupBox" Header="File Information" Margin="10,10,10,-20">
+            <GroupBox x:Name="groupBox" Header="{i18n:StringLocalizer 'FileInformation'}" Margin="10,10,10,-20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
@@ -35,7 +35,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Input File'}" HorizontalAlignment="Right" />
+                    <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'InputFile'}" HorizontalAlignment="Right" />
 
                     <TextBox Grid.Row="0" Grid.Column="1" Width="550" Height="22" IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                     Text="{Binding InputFileNamePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -47,7 +47,7 @@
                         </StackPanel>
                     </Button>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'Output File'}" HorizontalAlignment="Right" />
+                    <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'OutputFile'}" HorizontalAlignment="Right" />
 
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding OutputFileNamePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="550" Height="22"
                              IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -85,7 +85,7 @@
                         </StackPanel>
                     </Button>
                 </Grid>
-                <GroupBox x:Name="groupBoxone" Header="Sorting progress" Margin="10,10,10, 20">
+                <GroupBox x:Name="groupBoxone" Header="{i18n:StringLocalizer 'SortingProgress'}" Margin="10,10,10, 20">
                     <controls:ProgressPanel />
                 </GroupBox>
             </StackPanel>

@@ -117,15 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="BrowseFolder" xml:space="preserve">
-    <value>Browse</value>
-  </data>
-  <data name="FileNameLabel" xml:space="preserve">
-    <value>File Name :</value>
-  </data>
-  <data name="FileSizeLabel" xml:space="preserve">
-    <value>File Size :</value>
-  </data>
   <data name="FileTextLineLengthMaxLabel" xml:space="preserve">
     <value>Text Line Max Length :</value>
   </data>
@@ -275,5 +266,50 @@
   </data>
   <data name="ResetProcessButtonName" xml:space="preserve">
     <value>Reset Form</value>
+  </data>
+  <data name="InputFile" xml:space="preserve">
+    <value>Input File</value>
+  </data>
+  <data name="FileSorter" xml:space="preserve">
+    <value>File Sorter</value>
+  </data>
+  <data name="FileInformation" xml:space="preserve">
+    <value>File Information</value>
+  </data>
+  <data name="OutputFile" xml:space="preserve">
+    <value>Output File</value>
+  </data>
+  <data name="SortingProgress" xml:space="preserve">
+    <value>Sorting Progress</value>
+  </data>
+  <data name="FolderPath" xml:space="preserve">
+    <value>Folder Path</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Browse" xml:space="preserve">
+    <value>Browse</value>
+  </data>
+  <data name="FileSize" xml:space="preserve">
+    <value>File Size</value>
+  </data>
+  <data name="FileGenerator" xml:space="preserve">
+    <value>File Generator</value>
+  </data>
+  <data name="GenerateTextFile" xml:space="preserve">
+    <value>Generate Text File</value>
+  </data>
+  <data name="GenerationProgress" xml:space="preserve">
+    <value>Generation Progress</value>
+  </data>
+  <data name="FileParts" xml:space="preserve">
+    <value>File Parts</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Progress</value>
   </data>
 </root>

@@ -23,7 +23,7 @@
         <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Duration'}" HorizontalAlignment="Right" />
         <Label Grid.Row="0" Grid.Column="1" Content="{Binding ProgressBarElapsed, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'File Parts'}" HorizontalAlignment="Right" />
+        <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'FileParts'}" HorizontalAlignment="Right" />
         <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ProgressBarStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="560"/>
 
         <Label Grid.Row="2" Grid.Column="0" Content="{i18n:StringLocalizer 'Size'}" HorizontalAlignment="Right" />

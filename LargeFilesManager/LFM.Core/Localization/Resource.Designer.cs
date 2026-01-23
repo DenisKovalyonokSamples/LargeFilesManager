@@ -72,9 +72,9 @@ namespace LFM.Core.Localization {
         /// <summary>
         ///   Looks up a localized string similar to Browse.
         /// </summary>
-        internal static string BrowseFolder {
+        internal static string Browse {
             get {
-                return ResourceManager.GetString("BrowseFolder", resourceCulture);
+                return ResourceManager.GetString("Browse", resourceCulture);
             }
         }
         
@@ -133,20 +133,56 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File Name :.
+        ///   Looks up a localized string similar to File Generator.
         /// </summary>
-        internal static string FileNameLabel {
+        internal static string FileGenerator {
             get {
-                return ResourceManager.GetString("FileNameLabel", resourceCulture);
+                return ResourceManager.GetString("FileGenerator", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to File Size :.
+        ///   Looks up a localized string similar to File Information.
         /// </summary>
-        internal static string FileSizeLabel {
+        internal static string FileInformation {
             get {
-                return ResourceManager.GetString("FileSizeLabel", resourceCulture);
+                return ResourceManager.GetString("FileInformation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Name.
+        /// </summary>
+        internal static string FileName {
+            get {
+                return ResourceManager.GetString("FileName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Parts.
+        /// </summary>
+        internal static string FileParts {
+            get {
+                return ResourceManager.GetString("FileParts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Size.
+        /// </summary>
+        internal static string FileSize {
+            get {
+                return ResourceManager.GetString("FileSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File Sorter.
+        /// </summary>
+        internal static string FileSorter {
+            get {
+                return ResourceManager.GetString("FileSorter", resourceCulture);
             }
         }
         
@@ -187,11 +223,29 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Folder Path.
+        /// </summary>
+        internal static string FolderPath {
+            get {
+                return ResourceManager.GetString("FolderPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Generate File.
         /// </summary>
         internal static string GenerateFileButtonName {
             get {
                 return ResourceManager.GetString("GenerateFileButtonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Generate Text File.
+        /// </summary>
+        internal static string GenerateTextFile {
+            get {
+                return ResourceManager.GetString("GenerateTextFile", resourceCulture);
             }
         }
         
@@ -232,11 +286,29 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Generation Progress.
+        /// </summary>
+        internal static string GenerationProgress {
+            get {
+                return ResourceManager.GetString("GenerationProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Input :.
         /// </summary>
         internal static string Input {
             get {
                 return ResourceManager.GetString("Input", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Input File.
+        /// </summary>
+        internal static string InputFile {
+            get {
+                return ResourceManager.GetString("InputFile", resourceCulture);
             }
         }
         
@@ -295,6 +367,15 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Output File.
+        /// </summary>
+        internal static string OutputFile {
+            get {
+                return ResourceManager.GetString("OutputFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 2/3 &quot;{0}&quot; has been sorted..
         /// </summary>
         internal static string PartFileIsSorted {
@@ -322,6 +403,15 @@ namespace LFM.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Progress.
+        /// </summary>
+        internal static string Progress {
+            get {
+                return ResourceManager.GetString("Progress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Reset Form.
         /// </summary>
         internal static string ResetProcessButtonName {
@@ -336,6 +426,15 @@ namespace LFM.Core.Localization {
         internal static string SelectFile {
             get {
                 return ResourceManager.GetString("SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string Size {
+            get {
+                return ResourceManager.GetString("Size", resourceCulture);
             }
         }
         
@@ -363,6 +462,15 @@ namespace LFM.Core.Localization {
         internal static string SortFileButtonName {
             get {
                 return ResourceManager.GetString("SortFileButtonName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Sorting Progress.
+        /// </summary>
+        internal static string SortingProgress {
+            get {
+                return ResourceManager.GetString("SortingProgress", resourceCulture);
             }
         }
         

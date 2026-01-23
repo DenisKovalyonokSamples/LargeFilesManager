@@ -10,7 +10,7 @@
         ResizeMode="NoResize"
         WindowState="Normal"
         mc:Ignorable="d"
-        Title="File Generator" Height="340" Width="800"
+        Title="{i18n:StringLocalizer 'FileGenerator'}" Height="340" Width="800"
         Style="{StaticResource CustomWindowStyle}">
     <Window.Resources>
         <DropShadowBitmapEffect x:Key="NormalShadow" ShadowDepth="2" Softness="0.2" Opacity="0.64"/>
@@ -22,7 +22,7 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Vertical">
-            <GroupBox x:Name="groupBox" Header="File Information" Margin="10,10,10,-20">
+            <GroupBox x:Name="groupBox" Header="{i18n:StringLocalizer 'FileInformation'}" Margin="10,10,10,-20">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="100"/>
@@ -35,7 +35,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'Folder Path'}" HorizontalAlignment="Right" />
+                    <Label Grid.Row="0" Grid.Column="0" Content="{i18n:StringLocalizer 'FolderPath'}" HorizontalAlignment="Right" />
 
                     <TextBox Grid.Row="0" Grid.Column="1" Name="SelectedFolderText" Width="550" Height="22"
                         Text="{Binding FilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -47,12 +47,12 @@
                         </StackPanel>
                     </Button>
 
-                    <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'File Name'}" HorizontalAlignment="Right" />
+                    <Label Grid.Row="1" Grid.Column="0" Content="{i18n:StringLocalizer 'FileName'}" HorizontalAlignment="Right" />
 
                     <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                         <TextBox Name="TextFileNameBox" Text="{Binding FileName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="380" Height="22" 
                                  IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Label Grid.Row="2" Grid.Column="0"  Content="{i18n:StringLocalizer 'File Size'}" HorizontalAlignment="Right"/>
+                        <Label Grid.Row="2" Grid.Column="0"  Content="{i18n:StringLocalizer 'FileSize'}" HorizontalAlignment="Right"/>
                         <xctk:IntegerUpDown Value="{Binding FileSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                             Width="60" Minimum="0" Maximum="500" Height="22" Background="#FF2D2D2D" BorderBrush="#FF2F2F2F" Foreground="White"
                             IsEnabled="{Binding IsFileInformationPanelEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -84,11 +84,11 @@
                         Command="{Binding GenerateTextFileCommand}" Margin="5,35,10,2" Background="Green"
                         IsEnabled="{Binding IsFileGeneratorButtonEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{i18n:StringLocalizer 'Generate Text File'}" VerticalAlignment="Center"/>
+                            <TextBlock Text="{i18n:StringLocalizer 'GenerateTextFile'}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
                 </Grid>
-                <GroupBox x:Name="groupBoxone" Header="Generation progress" Margin="10,10,10, 20">
+                <GroupBox x:Name="groupBoxone" Header="{i18n:StringLocalizer 'GenerationProgress'}" Margin="10,10,10, 20">
                     <controls:ProgressPanel />
                 </GroupBox>
             </StackPanel>
