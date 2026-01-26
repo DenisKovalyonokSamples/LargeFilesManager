@@ -23,10 +23,10 @@ namespace LFM.FileSorter.Services
         private static bool TryParseLine(string inputLine, out ParsedLine result)
         {
             result = default!;
-            if (string.IsNullOrWhiteSpace(inputLine)) return false;
+            if (string.IsNullOrWhiteSpace(inputLine)) return false; // Reject empty/whitespace
 
-            int separatorIndex = inputLine.IndexOf(". ");
-            if (separatorIndex <= 0) return false;
+            int separatorIndex = inputLine.IndexOf(". "); // Find numeric/text separator
+            if (separatorIndex <= 0) return false; // Must be present and after index 0
 
             // Parse the numeric prefix before ". "
             if (!int.TryParse(inputLine.AsSpan(0, separatorIndex), out int numericPrefix)) return false;
@@ -199,12 +199,12 @@ namespace LFM.FileSorter.Services
                         partIndex++;
                     }
                 }
-
+                // If remaining lines after loop
                 if (currentPartLines.Count > 0)
                 {
-                    currentPartLines.Sort(new ParsedLineComparer());
-                    partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.OriginalLine).ToList()));
-                    currentPartLines.Clear();
+                    currentPartLines.Sort(new ParsedLineComparer()); // Sort final partial part
+                    partQueues.Add(new PartQueue(partIndex, currentPartLines.Select(pl => pl.OriginalLine).ToList())); // Enqueue last part
+                    currentPartLines.Clear(); // Free list
                 }
                 // Indicate that no more parts will be added.
                 partQueues.CompleteAdding();
@@ -233,10 +233,10 @@ namespace LFM.FileSorter.Services
                 {
                     if (!candidatesByLine.TryGetValue(firstParsedLine, out var pathsQueue))
                     {
-                        pathsQueue = new Queue<string>();
-                        candidatesByLine[firstParsedLine] = pathsQueue;
+                        pathsQueue = new Queue<string>(); // Create queue for paths
+                        candidatesByLine[firstParsedLine] = pathsQueue; // Store in dictionary
                     }
-                    pathsQueue.Enqueue(entry.Key);
+                    pathsQueue.Enqueue(entry.Key); // Queue the part path that produced the line
                 }
             }
 
@@ -251,15 +251,15 @@ namespace LFM.FileSorter.Services
                 // Write current smallest line
                 outputWriter.WriteLine(currentLine.OriginalLine);
                 int bytesWritten = utf8NoBom.GetByteCount(currentLine.OriginalLine) + utf8NoBom.GetByteCount(outputWriter.NewLine);
-                lock (ProgressLock)
+                lock (ProgressLock) // Update progress thread-safely
                 {
                     ProgressValue += bytesWritten;
                 }
 
                 // Advance the source that produced this occurrence
-                var sourcePath = pendingSources.Dequeue();
-                var sourceReader = readersByPath[sourcePath];
-                var nextLineText = sourceReader.ReadLine();
+                var sourcePath = pendingSources.Dequeue(); // Which part produced this line
+                var sourceReader = readersByPath[sourcePath]; // Get reader
+                var nextLineText = sourceReader.ReadLine(); // Read next line from that part
 
                 if (pendingSources.Count == 0)
                 {
@@ -272,9 +272,9 @@ namespace LFM.FileSorter.Services
                     if (!candidatesByLine.TryGetValue(nextParsedLine, out var pathsQueue))
                     {
                         pathsQueue = new Queue<string>();
-                        candidatesByLine[nextParsedLine] = pathsQueue;
+                        candidatesByLine[nextParsedLine] = pathsQueue;  // Store
                     }
-                    pathsQueue.Enqueue(sourcePath);
+                    pathsQueue.Enqueue(sourcePath);  // Enqueue source back under its next parsed line
                 }
             }
 
