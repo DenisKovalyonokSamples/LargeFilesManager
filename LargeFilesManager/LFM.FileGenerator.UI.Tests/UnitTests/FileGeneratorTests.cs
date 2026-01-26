@@ -45,7 +45,7 @@ namespace LFM.FileGenerator.Tests.UnitTests
             var mockGenerator = new Mock<ITextFileGeneratorService>();
             var provider = TestServiceHost.CreateDefaultServiceProvider(services =>
             {
-                // override ITextFileGeneratorService
+                // Override ITextFileGeneratorService
                 services.AddSingleton<ITextFileGeneratorService>(mockGenerator.Object);
             });
 
@@ -106,7 +106,7 @@ namespace LFM.FileGenerator.Tests.UnitTests
 
             var fileName = "tiny_output.txt";
             var cpu = Environment.ProcessorCount;
-            // ensure sizePerFile >= 1 byte for each part
+            // Ensure sizePerFile >= 1 byte for each part
             long totalBytes = cpu * 8; // bytes
             int maxLineLen = 4;
 
@@ -163,14 +163,14 @@ namespace LFM.FileGenerator.Tests.UnitTests
                 Assert.True(File.Exists(finalPath), "Final merged file was not created.");
 
                 var lines = File.ReadAllLines(finalPath);
-                // allow empty (in case of minimal size/part rounding), else validate format: "<number>. "
+                // Allow empty (in case of minimal size/part rounding), else validate format: "<number>. "
                 if (lines.Length > 0)
                 {
                     var rx = new Regex(@"^\d+\. $");
                     Assert.All(lines, l => Assert.Matches(rx, l));
                 }
 
-                // no part files remaining
+                // No part files remaining
                 var fileNameNoExt = Path.GetFileNameWithoutExtension(fileName);
                 var ext = Path.GetExtension(fileName);
                 var partFiles = Directory.GetFiles(tempDir, $"{fileNameNoExt}.part_*{ext}");

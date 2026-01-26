@@ -12,7 +12,7 @@ namespace LFM.FileSorter.Tests.UnitTests
     {
         public FileSorterTests()
         {
-            // baseline provider (will be overridden per-test as needed)
+            // Baseline provider (will be overridden per-test as needed)
             TestServiceHost.CreateDefaultServiceProvider();
         }
 
@@ -48,7 +48,7 @@ namespace LFM.FileSorter.Tests.UnitTests
 
             TestServiceHost.CreateDefaultServiceProvider(services =>
             {
-                // default simple localizer is fine
+                // Default simple localizer is fine
                 services.AddSingleton(Options.Create(customSettings));
             });
 
