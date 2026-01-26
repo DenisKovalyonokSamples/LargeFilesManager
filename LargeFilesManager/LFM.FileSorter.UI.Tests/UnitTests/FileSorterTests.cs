@@ -81,18 +81,19 @@ namespace LFM.FileSorter.Tests.UnitTests
                 Assert.Equal("SortTextFile_Status_Completed", model.ProgresStatus);
                 Assert.False(model.IsFileSorterButtonEnabled);
                 Assert.True(model.IsResetProcessButtonEnabled);
+
+                // Assert no leftover part files (adjust pattern if service uses different names)
+                var leftoverParts = Directory.EnumerateFiles(tempDir, "*.part", SearchOption.AllDirectories).ToList();
+                Assert.Empty(leftoverParts);
             }
             finally
             {
-                // Cleanup
-                try
+                // Ensure no file handles held by service before deleting
+                // Fail if cleanup fails to expose leaks
+                if (Directory.Exists(tempDir))
                 {
-                    if (Directory.Exists(tempDir))
-                        Directory.Delete(tempDir, recursive: true);
-                }
-                catch (Exception ex)
-                {
-                    Log.Error(ex, "SortTextFile_SortsSmallFile_CreatesSortedOutputAndDeletesPartFiles error.");
+                    Directory.Delete(tempDir, recursive: true);
+                    Assert.False(Directory.Exists(tempDir), "Temporary directory was not fully cleaned up.");
                 }
             }
         }
@@ -277,6 +278,60 @@ namespace LFM.FileSorter.Tests.UnitTests
                 {
                     Log.Error(ex, "SortTextFile_TieBreaksByNumericPrefix_WhenTextEqual error.");
                 }
+            }
+        }
+
+        [Fact]
+        public async Task SortTextFile_EmptyInput_CreatesEmptyOutput()
+        {
+            var tempDir = Path.Combine(Path.GetTempPath(), "test_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+
+            var inputPath = Path.Combine(tempDir, "empty.txt");
+            var outputPath = Path.Combine(tempDir, "empty_sorted.txt");
+            await File.WriteAllTextAsync(inputPath, string.Empty);
+
+            var customSettings = new AppSettings { TotalConsumerTasks = 1, MaxPartFileSizeMegaBytes = 1, DefaultFileTextLineLengthMax = 100, BufferFileWriteSize = 4 };
+            TestServiceHost.CreateDefaultServiceProvider(s => s.AddSingleton(Options.Create(customSettings)));
+
+            var service = new FileSorterService();
+            var model = new FileSorterViewModel();
+
+            try
+            {
+                await service.SortTextFile(inputPath, outputPath, model);
+
+                Assert.True(File.Exists(outputPath));
+                Assert.Empty(File.ReadAllLines(outputPath));
+            }
+            finally
+            {
+                if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true);
+            }
+        }
+
+        [Fact]
+        public async Task SortTextFile_InputDoesNotExist_Throws()
+        {
+            var tempDir = Path.Combine(Path.GetTempPath(), "test_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+
+            var inputPath = Path.Combine(tempDir, "missing.txt");
+            var outputPath = Path.Combine(tempDir, "sorted.txt");
+
+            var customSettings = new AppSettings { TotalConsumerTasks = 1, MaxPartFileSizeMegaBytes = 1, DefaultFileTextLineLengthMax = 100, BufferFileWriteSize = 4 };
+            TestServiceHost.CreateDefaultServiceProvider(s => s.AddSingleton(Options.Create(customSettings)));
+
+            var service = new FileSorterService();
+            var model = new FileSorterViewModel();
+
+            try
+            {
+                await Assert.ThrowsAsync<FileNotFoundException>(() => service.SortTextFile(inputPath, outputPath, model));
+            }
+            finally
+            {
+                if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true);
             }
         }
     }
